@@ -18,8 +18,26 @@ Modul yang akan diimplementasikan:
 - Publisher        : Model tambahan untuk _extend_ user, mempunyai privilege untuk merilis buku
 - PublisherHouse  : Model untuk mengatur publisher berdasarkan dari penerbit mana, seperti grup untuk publisher
 
+Pembagian tugas modul
+- publisher oleh Joseph Bintang A
+- publisher house oleh Sekar Gandes Dianti
+- reader oleh Tiffany Lindy Adisuryo
+- profile oleh Samuel Farrel Bagasputra
+- book oleh Maurice Yang
+- search bar & like book oleh Fredo Melvern Tanzil
+
 Role:
 - Reader    : User biasa, bisa membaca buku dan menyimpan buku dalam list buku yang ingin dibaca kemudian hari
 - Publisher  : User yang bisa merilis dan mengubah buku
 - admin      : User yang membuat Publisher dan PublisherHouse baru
+
+Link berita acara: https://docs.google.com/spreadsheets/d/1dzGmWAET50FUOgAlvgXIZAMh0bGd6IZIpqdXS_3GczQ/edit#gid=667496128
+
+
+Alur pengintegrasian dengan web service untuk terhubung dengan aplikasi web yang sudah dibuat saat Proyek Tengah Semester:
+1. Menambahkan dependency http ke proyek yang digunakan untuk bertukar data melalui HTTP request
+2. Membuat model sesuai ddengan respon data yang berasal dari aplikasi web proyek tengah semester
+3. Mengirim http request ke web service menggunakan dependency http
+4. Mengubah objek yang diperoleh dari web service ke model yang telah dibuat
+5. Menampilkan data yang telah diubah ke aplikasi flutter dengan FutureBuilder
 
