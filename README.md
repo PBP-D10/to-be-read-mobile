@@ -17,6 +17,8 @@ Modul yang akan diimplementasikan:
 - Reader          : Model tambahan untuk _extend_ user, terdapat data tambahan seperti buku yang telah disimpan, dll
 - Publisher        : Model tambahan untuk _extend_ user, mempunyai privilege untuk merilis buku
 - PublisherHouse  : Model untuk mengatur publisher berdasarkan dari penerbit mana, seperti grup untuk publisher
+- Search bar      : Modul untuk mencari buku berdasarkan kata kunci
+- Like Book       : Modul untuk memberi opsi kepada pembaca untuk _like_ buku yang mereka sukai
 
 Pembagian tugas modul
 - publisher oleh Joseph Bintang A
