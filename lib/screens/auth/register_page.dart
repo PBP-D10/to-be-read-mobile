@@ -32,14 +32,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       Text(
                         "Welcome TBRead",
                         style: TextStyle(
-                          fontSize: 48,
+                          fontSize: 32,
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
                         "Create an account and start bookmark your books",
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                        textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 16.0),
                     ],
@@ -62,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       const Text(
                         "Register",
                         style: TextStyle(
-                          fontSize: 36,
+                          fontSize: 24,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -112,6 +113,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: _passwordController,
+                        obscureText: true,
                         decoration: InputDecoration(
                           labelText: 'Password',
                           enabledBorder: OutlineInputBorder(
@@ -149,7 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Text("Have an account? Register "),
+                          const Text("Have an account? Login "),
                           InkWell(
                             onTap: () {
                               Navigator.push(

@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       "Welcome TBRead",
                       style: TextStyle(
-                        fontSize: 48,
+                        fontSize: 32,
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                       ),
@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                       const Text(
                         "Login",
                         style: TextStyle(
-                          fontSize: 36,
+                          fontSize: 24,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -88,6 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: _passwordController,
+                        obscureText: true,
                         decoration: InputDecoration(
                           labelText: 'Password',
                           enabledBorder: OutlineInputBorder(
@@ -108,11 +109,12 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 24),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 36, vertical: 18)),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 36, vertical: 18),
+                        ),
                         onPressed: () async {
                           String username = _usernameController.text;
                           String password = _passwordController.text;
@@ -126,7 +128,6 @@ class _LoginPageState extends State<LoginPage> {
                             'username': username,
                             'password': password,
                           });
-
                           if (request.loggedIn) {
                             String message = response['message'];
                             String uname = response['username'];
