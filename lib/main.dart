@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'mytbr.dart';
+import 'package:to_be_read_mobile/mytbr.dart';
+//import 'package:google_fonts/google_fonts.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:to_be_read_mobile/screens/auth/login_page.dart';
+// import 'package:to_be_read_mobile/screens/auth/login_page.dart';
+import 'package:to_be_read_mobile/screens/home_page.dart';
 
 void main() {
   runApp(const MyApp());

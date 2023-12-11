@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:to_be_read_mobile/models/savedbook.dart';
 
@@ -10,11 +12,11 @@ class MyTBReadPage extends StatefulWidget {
 }
 
 class _MyTBReadPageState extends State<MyTBReadPage> {
-  List<Map<String, dynamic>> savedBooks = []; // Replace with your data model
-  Future<List<SavedBook>> fetchItem() async {
+  //List<Map<String, dynamic>> savedBooks = []; // Replace with your data model
+  Future<List<SavedBook>> fetchSavedBook() async {
       // TODO: Ganti URL dan jangan lupa tambahkan trailing slash (/) di akhir URL!
-      var url = Uri.parse(
-          'http://localhost:8000/json/');
+       var url = Uri.parse(
+        'http://localhost:8000/get_savedBook_json/');
       var response = await http.get(
           url,
           headers: {"Content-Type": "application/json"},
@@ -24,71 +26,130 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
       var data = jsonDecode(utf8.decode(response.bodyBytes));
 
       // melakukan konversi data json menjadi object Item
-      List<SavedBook> list_Item = [];
+      List<SavedBook> saved_book = [];
       for (var d in data) {
           if (d != null) {
-              list_Item.add(SavedBook.fromJson(d));
+              saved_book.add(SavedBook.fromJson(d));
           }
       }
-      return list_Item;
+      return saved_book;
   }
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
       appBar: AppBar(
         title: Text('Home | My TBRead'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Welcome to My TBRead',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const Text(
+              "Welcome to My TBRead",
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-            savedBooks.isEmpty
-                ? Text('Currently, there are no books to be read 😣', style: TextStyle(fontSize: 18))
-                : Column(
-                    children: [
-                      Text('Currently, you have ${savedBooks.length} book(s) to be read', style: TextStyle(fontSize: 18)),
-                      SizedBox(height: 8),
-                      GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-                        itemCount: savedBooks.length,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final savedBook = savedBooks[index];
-                          return GestureDetector(
-                            onTap: () {
-                              // Handle book item click
-                              // Navigate to 'mytbr/${savedBook['book']['pk']}'
-                            },
-                            child: Card(
-                              elevation: 5,
-                              child: Column(
-                                children: [
-                                  Image.network(savedBook['book']['image_l'], height: 150, width: double.infinity, fit: BoxFit.cover),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(savedBook['book']['title'], style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                        Text(savedBook['book']['author']),
-                                      ],
+            const SizedBox(height: 18.0),
+            FutureBuilder(
+                future: fetchSavedBook(),
+                builder: (context, AsyncSnapshot snapshot) {
+                  if (snapshot.data == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    if (!snapshot.hasData) {
+                      return const Column(
+                        children: [
+                          Text('Currently, there are no books to be read 😣', style: TextStyle(fontSize: 18)),
+                          SizedBox(height: 8),
+                        ],
+                      );
+                    } else {
+                      return GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (_, index) => Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${snapshot.data![index].fields.title}",
+                                      style: const TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                        "${snapshot.data![index].fields.author}"),
+                                    const SizedBox(height: 10),
+                                    Text("${snapshot.data![index].fields.year}")
+                                  ],
+                                ),
+                              ));
+                    }
+                  }
+                }),
+      // Padding(
+      //   padding: const EdgeInsets.all(16.0),
+      //   child: Column(
+      //     crossAxisAlignment: CrossAxisAlignment.start,
+      //     children: [
+      //       Text(
+      //         'Welcome to My TBRead',
+      //         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      //       ),
+      //       savedBooks.isEmpty
+      //           ? Text('Currently, there are no books to be read 😣', style: TextStyle(fontSize: 18))
+      //           : Column(
+      //               children: [
+      //                 Text('Currently, you have ${savedBooks.length} book(s) to be read', style: TextStyle(fontSize: 18)),
+      //                 SizedBox(height: 8),
+      //                 GridView.builder(
+      //                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+      //                   itemCount: savedBooks.length,
+      //                   shrinkWrap: true,
+      //                   physics: NeverScrollableScrollPhysics(),
+      //                   itemBuilder: (context, index) {
+      //                     final savedBook = savedBooks[index];
+      //                     return GestureDetector(
+      //                       onTap: () {
+      //                         // Handle book item click
+      //                         // Navigate to 'mytbr/${savedBook['book']['pk']}'
+      //                       },
+      //                       child: Card(
+      //                         elevation: 5,
+      //                         child: Column(
+      //                           children: [
+      //                             Image.network(savedBook['book']['image_l'], height: 150, width: double.infinity, fit: BoxFit.cover),
+      //                             Padding(
+      //                               padding: const EdgeInsets.all(8.0),
+      //                               child: Column(
+      //                                 crossAxisAlignment: CrossAxisAlignment.start,
+      //                                 children: [
+      //                                   Text(savedBook['book']['title'], style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      //                                   Text(savedBook['book']['author']),
+      //                                 ],
+      //                               ),
+      //                             ),
+      //                           ],
+      //                         ),
+      //                       ),
+      //                     );
+      //                   },
+      //                 ),
+      //               ],
+      //             ),
             Center(
               child: ElevatedButton(
                 onPressed: () {
@@ -138,7 +199,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
             ),
           ],
         ),
-      ),
+      )
     );
   }
 }
