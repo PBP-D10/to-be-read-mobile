@@ -86,9 +86,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                           filled: true,
                         ),
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
                       ),
                       const SizedBox(height: 16),
                       TextField(
