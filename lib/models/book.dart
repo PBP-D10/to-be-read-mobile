@@ -1,12 +1,12 @@
 // To parse this JSON data, do
 //
-//     final product = productFromJson(jsonString);
+//     final book = bookFromJson(jsonString);
 
 import 'dart:convert';
 
-Book productFromJson(String str) => Book.fromJson(json.decode(str));
+Book bookFromJson(String str) => Book.fromJson(json.decode(str));
 
-String productToJson(Book data) => json.encode(data.toJson());
+String bookToJson(Book data) => json.encode(data.toJson());
 
 class Book {
   String model;
