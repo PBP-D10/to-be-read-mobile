@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:to_be_read_mobile/models/book.dart';
 
 class SearchBarApp extends StatefulWidget {
   const SearchBarApp({super.key});
@@ -11,7 +12,8 @@ class SearchBarApp extends StatefulWidget {
 }
 
 class _SearchBarAppState extends State<SearchBarApp> {
-  List<dynamic> _searchResults = [];
+  List<Book> allBooks = [];
+  List<Book> filteredBooks = [];
 
   final TextEditingController _controller = TextEditingController();
 
@@ -31,30 +33,30 @@ class _SearchBarAppState extends State<SearchBarApp> {
                     EdgeInsets.symmetric(horizontal: 16.0)),
                 hintText: 'Search',
                 onChanged: (String value) {
-                  getBookWithKeyword();
+                  filterBooks();
                 },
                 leading: const Icon(Icons.search),
               ),
               const SizedBox(height: 16.0),
               Text('Keyword: ${_controller.text}'),
               const SizedBox(height: 20.0),
-              _searchResults.isEmpty
+              filteredBooks.isEmpty
                   ? const Center(child: Text('No results'))
                   : Expanded(
                       child: ListView.builder(
-                        itemCount: _searchResults.length,
+                        itemCount: filteredBooks.length,
                         itemBuilder: (context, index) {
-                          final book = _searchResults[index]['fields'];
+                          final book = filteredBooks[index].fields;
 
                           return ListTile(
-                            leading: Image.network(book['image_s'],
+                            leading: Image.network(book.imageS,
                                 width: 50, height: 150, fit: BoxFit.cover,
                                 errorBuilder: (BuildContext context,
                                     Object exception, StackTrace? stackTrace) {
                               return const Icon(Icons.error);
                             }),
-                            title: Text(book['title']),
-                            subtitle: Text(book['author']),
+                            title: Text(book.title),
+                            subtitle: Text(book.author),
                           );
                         },
                       ),
@@ -62,42 +64,65 @@ class _SearchBarAppState extends State<SearchBarApp> {
             ]));
   }
 
-  Future<void> getBookWithKeyword() async {
+  @override
+  void initState() {
+    super.initState();
+    getAllBook();
+  }
+
+  Future<void> getAllBook() async {
     String url = 'http://127.0.0.1:8000/json/';
     Map<String, String> headers = {
       'Content-Type': 'application/json; charset=UTF-8',
     };
 
     try {
-      print('value: ${_controller.text}');
+      var j = jsonEncode({});
+      var response = await http.post(Uri.parse(url), headers: headers, body: j);
 
-     // var j = jsonEncode(<String, String>{'keyword': _controller.text});
-      var j = jsonEncode({'keyword': _controller.text});
-      print(j);
-
-      var response = await http.post(Uri.parse(url), headers: headers, body:j);
-
-     // var hasil = jsonDecode(utf8.decode(response.bodyBytes));
-      var hasil = jsonDecode(response.body);
       if (response.statusCode == 200) {
         // success
-        print('Request sent successfully');
         setState(() {
-          // _searchResults = json.decode(response.body);
-          var utf = utf8.decode(response.bodyBytes);
-          //print(utf);
-
-          _searchResults = jsonDecode(utf);
-          //print(_searchResults);
+          var data = jsonDecode(utf8.decode(response.bodyBytes));
+          //print(data);
+          for (var u in data) {
+            if (u != null) {
+              allBooks.add(Book.fromJson(u));
+            } else {}
+          }
+          filteredBooks = allBooks;
         });
       } else {
         //  error
+        // ignore: avoid_print
         print('Request failed with status: ${response.statusCode}');
+        // ignore: avoid_print
         print('Response: ${response.body}');
       }
     } catch (error) {
       // network or other errors
+      // ignore: avoid_print
       print('Error: $error');
     }
+  }
+
+  void filterBooks() {
+    setState(() {
+      filteredBooks = allBooks
+          .where((book) =>
+              book.fields.title
+                  .toLowerCase()
+                  .contains(_controller.text.toLowerCase()) ||
+              book.fields.author
+                  .toLowerCase()
+                  .contains(_controller.text.toLowerCase()) ||
+              book.fields.isbn
+                  .toLowerCase()
+                  .contains(_controller.text.toLowerCase()) ||
+              book.fields.publisher
+                  .toLowerCase()
+                  .contains(_controller.text.toLowerCase()))
+          .toList();
+    });
   }
 }
