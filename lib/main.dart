@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:to_be_read_mobile/mytbr.dart';
-//import 'package:google_fonts/google_fonts.dart';
+import 'package:to_be_read_mobile/screens/home_page.dart';
+import 'package:to_be_read_mobile/screens/mytbr_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:to_be_read_mobile/screens/auth/login_page.dart';
-// import 'package:to_be_read_mobile/screens/auth/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           debugShowCheckedModeBanner: false,
-          home: MyTBReadPage(),
+          home: LoginPage(),
       )
     );
   }

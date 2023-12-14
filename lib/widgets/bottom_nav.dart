@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_be_read_mobile/screens/mytbr_page.dart';
 import 'package:to_be_read_mobile/screens/home_page.dart';
 
 class BottomNav extends StatelessWidget {
@@ -31,7 +32,7 @@ class BottomNav extends StatelessWidget {
         else if (value == 1)
           {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const HomePage())),
+                MaterialPageRoute(builder: (context) => const MyTBReadPage())),
           }
         else if (value == 2)
           {
