@@ -73,21 +73,19 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 18.0),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Expanded(
-                child: TextField(
-                  textInputAction: TextInputAction.go,
-                  onSubmitted: (value) {
-                    // print(value);
-                  },
-                  decoration: const InputDecoration(
-                    hintText: "Search",
-                    fillColor: Colors.white,
-                    filled: true,
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(24),
-                      ),
+              child: TextField(
+                textInputAction: TextInputAction.go,
+                onSubmitted: (value) {
+                  // print(value);
+                },
+                decoration: const InputDecoration(
+                  hintText: "Search",
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(24),
                     ),
                   ),
                 ),
