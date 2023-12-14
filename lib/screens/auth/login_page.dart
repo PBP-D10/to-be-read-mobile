@@ -128,9 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                             'username': username,
                             'password': password,
                           });
-                          print(response);
                           if (request.loggedIn) {
-                            print("Hore");
                             String message = response['message'];
                             String uname = response['username'];
                             if (context.mounted) {

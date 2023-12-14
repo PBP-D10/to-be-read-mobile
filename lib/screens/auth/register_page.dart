@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/screens/auth/login_page.dart';
-
-import '../home_page.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -136,11 +135,35 @@ class _RegisterPageState extends State<RegisterPage> {
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 36, vertical: 18)),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                        onPressed: () async {
+                          var url = Uri.parse(
+                              "http://127.0.0.1:8000/auth/register-endpoint");
+
+                          var response = await http.post(url, body: {
+                            'username': _usernameController.text,
+                            'email': _emailController.text,
+                            'password': _passwordController.text,
+                          });
+
+                          // melakukan decode response menjadi bentuk json
+
+                          if (response.statusCode == 200) {
+                            if (context.mounted) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginPage()));
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text("Terjadi error, silahkan coba lagi"),
+                                ),
+                              );
+                            }
+                          }
                         },
                         child: const Text('Register'),
                       ),
