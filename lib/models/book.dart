@@ -69,14 +69,14 @@ class Fields {
         dateAdded: DateTime.parse(json["date_added"]),
         */
         // handle null value (terutama untuk image kalo linknya gak dikasih)
-        isbn: json["ISBN"] == null ? "" : json["ISBN"],
-        title: json["title"] == null ? "" : json["title"],
-        author: json["author"] == null ? "" : json["author"],
-        year: json["year"] == null ? -1 : json["year"],
-        publisher: json["publisher"] == null ? "" : json["publisher"],
-        imageS: json["image_s"] == null ? "" : json["image_s"],
-        imageM: json["image_m"] == null ? "" : json["image_m"],
-        imageL: json["image_l"] == null ? "" : json["image_l"],
+        isbn: json["ISBN"] ?? "",
+        title: json["title"] ?? "",
+        author: json["author"] ?? "",
+        year: json["year"] ?? -1,
+        publisher: json["publisher"] ?? "",
+        imageS: json["image_s"] ?? "",
+        imageM: json["image_m"] ?? "",
+        imageL: json["image_l"] ?? "",
         dateAdded: DateTime.parse(json["date_added"]),
       );
 
