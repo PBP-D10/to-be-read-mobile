@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/models/book.dart';
 import 'package:http/http.dart' as http;
+import 'package:to_be_read_mobile/screens/search_page.dart';
 import 'dart:convert';
 
 import 'package:to_be_read_mobile/widgets/book_card.dart';
@@ -72,26 +73,33 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 18.0),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: TextField(
-                textInputAction: TextInputAction.go,
-                onSubmitted: (value) {
-                  // print(value);
-                },
-                decoration: const InputDecoration(
-                  hintText: "Search",
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(24),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: TextField(
+                  textInputAction: TextInputAction.go,
+                  readOnly: true,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SearchPage()),
+                    );
+                  },
+                  decoration: const InputDecoration(
+                    hintText:
+                        "Cari buku berdasarkan judul, penulis, penerbit, atau ISBN",
+                    fillColor: Colors.white,
+                    filled: true,
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(24),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
             const SizedBox(height: 32.0),
+
+
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(16.0),
