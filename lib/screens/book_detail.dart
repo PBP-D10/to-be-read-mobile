@@ -143,12 +143,17 @@ class BookDetailPage extends StatelessWidget {
                           // like book
                           //await likeBook(request);
 
-                          var url = 'http://127.0.0.1:8000/like_book_ajax/';
-                          
-                          var body = jsonEncode(<String, int>{'book': book.pk});
+
                           print("midway");
                           print("login? ${request.loggedIn}");
-                          var response = await request.postJson(url, body);
+                          print("cookies ${request.cookies}");
+                          print("headers: ${request.headers}");
+
+                          var response = await request.postJson(
+                            'http://127.0.0.1:8000/like_book_ajax/',
+                            jsonEncode(<String, int>{'book': book.pk}
+                            ));
+                          
                           print("done posting");
                           print(response);
 
