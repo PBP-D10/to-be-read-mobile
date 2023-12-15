@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:to_be_read_mobile/models/book.dart';
 // import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
 
@@ -7,8 +12,11 @@ class BookDetailPage extends StatelessWidget {
 
   final Book book;
 
+  //get http => null;
+
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
       // bottomNavigationBar: const BottomNav(),
       body: Stack(
@@ -90,6 +98,24 @@ class BookDetailPage extends StatelessWidget {
                       color: Colors.white,
                     )),
                 const SizedBox(height: 10),
+                FutureBuilder<int>(
+                  future: getLikeCount(),
+                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text(
+                          'Error getting like count: ${snapshot.error}');
+                    } else {
+                      return Text('Like count: ${snapshot.data}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ));
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -113,6 +139,37 @@ class BookDetailPage extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 36, vertical: 18),
                         ),
+                        onPressed: () async {
+                          // like book
+                          //await likeBook(request);
+
+                          var url = 'http://127.0.0.1:8000/like_book_ajax/';
+                          
+                          var body = jsonEncode(<String, int>{'book': book.pk});
+                          print("midway");
+                          print("login? ${request.loggedIn}");
+                          var response = await request.postJson(url, body);
+                          print("done posting");
+                          print(response);
+
+                          // ignore: use_build_context_synchronously
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    BookDetailPage(book: book)),
+                          );
+                        },
+                        child: const Text('Like'),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 36, vertical: 18),
+                        ),
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -127,5 +184,19 @@ class BookDetailPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<int> getLikeCount() async {
+    var url = Uri.parse('http://127.0.0.1:8000/like-count/${book.pk}/');
+    Map<String, String> headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+    var response = await http.get(
+      url,
+    );
+
+    // melakukan decode response menjadi bentuk json
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
+    return data['like_count'];
   }
 }
