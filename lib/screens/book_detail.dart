@@ -133,6 +133,8 @@ class BookDetailPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 20),
+
+                    // Like Button
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -140,22 +142,11 @@ class BookDetailPage extends StatelessWidget {
                               horizontal: 36, vertical: 18),
                         ),
                         onPressed: () async {
-                          // like book
-                          //await likeBook(request);
 
-
-                          print("midway");
-                          print("login? ${request.loggedIn}");
-                          print("cookies ${request.cookies}");
-                          print("headers: ${request.headers}");
-
-                          var response = await request.postJson(
+                          await request.postJson(
                             'http://127.0.0.1:8000/like_book_ajax/',
                             jsonEncode(<String, int>{'book': book.pk}
                             ));
-                          
-                          print("done posting");
-                          print(response);
 
                           // ignore: use_build_context_synchronously
                           Navigator.pushReplacement(
@@ -193,9 +184,6 @@ class BookDetailPage extends StatelessWidget {
 
   Future<int> getLikeCount() async {
     var url = Uri.parse('http://127.0.0.1:8000/like-count/${book.pk}/');
-    Map<String, String> headers = {
-      'Content-Type': 'application/json; charset=UTF-8',
-    };
     var response = await http.get(
       url,
     );
