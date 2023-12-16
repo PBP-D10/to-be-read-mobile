@@ -5,7 +5,6 @@ import 'package:to_be_read_mobile/screens/home_page.dart';
 import 'dart:convert';
 
 import 'package:to_be_read_mobile/widgets/book_card.dart';
-import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
 
 // make stateful widget called SearchPage
 // ignore: must_be_immutable
@@ -83,7 +82,7 @@ class _SearchPageState extends State<SearchPage> {
           },
         ),
       ),
-      bottomNavigationBar: const BottomNav(),
+      // bottomNavigationBar: const BottomNav(),
       body: Container(
         color: Theme.of(context).colorScheme.primary,
         child: Column(
