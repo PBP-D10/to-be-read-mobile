@@ -9,7 +9,8 @@ import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
 // make stateful widget called SearchPage
 // ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  final String query;
+  const SearchPage({Key? key, required this.query}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -26,7 +27,9 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
+    _textFieldController.text = widget.query;
     getAllBooks();
+    // filterBooks(widget.query);
 
     _focusNode = FocusNode();
     // Set a delay to ensure that the keyboard is displayed after a short delay
@@ -56,7 +59,8 @@ class _SearchPageState extends State<SearchPage> {
         allBooks.add(Book.fromJson(d));
       }
     }
-    filteredBooks = allBooks;
+    // filteredBooks = allBooks;
+    filterBooks(widget.query);
   }
 
   // This widget is the root of your application.
@@ -64,8 +68,8 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Buku apa yang ingin anda cari hari ini?",
-            style: TextStyle(color: Colors.white)),
+        title:
+            const Text("Pencarian Buku", style: TextStyle(color: Colors.white)),
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
