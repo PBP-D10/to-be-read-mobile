@@ -70,23 +70,37 @@ class BookDetailPage extends StatelessWidget {
                           fontSize: 14,
                           color: Colors.white,
                         )),
-                    RichText(
-                      text: const TextSpan(children: [
-                        WidgetSpan(
-                          child: Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.yellow,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "4.8",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ]),
+                    FutureBuilder(
+                      future: getLikeCount(),
+                      builder:
+                          (BuildContext context, AsyncSnapshot<int> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text(
+                              'Error getting like count: ${snapshot.error}');
+                        } else {
+                          return RichText(
+                            text: TextSpan(children: [
+                              WidgetSpan(
+                                child: Icon(
+                                  Icons.thumb_up,
+                                  size: 16,
+                                  color: Colors.blue.shade200,
+                                ),
+                              ),
+                              TextSpan(
+                                text: snapshot.data.toString(),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ]),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -97,24 +111,6 @@ class BookDetailPage extends StatelessWidget {
                       fontSize: 14,
                       color: Colors.white,
                     )),
-                const SizedBox(height: 10),
-                FutureBuilder<int>(
-                  future: getLikeCount(),
-                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text(
-                          'Error getting like count: ${snapshot.error}');
-                    } else {
-                      return Text('Like count: ${snapshot.data}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ));
-                    }
-                  },
-                ),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,11 +138,9 @@ class BookDetailPage extends StatelessWidget {
                               horizontal: 36, vertical: 18),
                         ),
                         onPressed: () async {
-
                           await request.postJson(
-                            'http://127.0.0.1:8000/like_book_ajax/',
-                            jsonEncode(<String, int>{'book': book.pk}
-                            ));
+                              'http://127.0.0.1:8000/like_book_ajax',
+                              jsonEncode(<String, int>{'book': book.pk}));
 
                           // ignore: use_build_context_synchronously
                           Navigator.pushReplacement(
