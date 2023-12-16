@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/models/book.dart';
 import 'package:http/http.dart' as http;
+import 'package:to_be_read_mobile/screens/home_page.dart';
 import 'dart:convert';
 
 import 'package:to_be_read_mobile/widgets/book_card.dart';
@@ -75,7 +76,10 @@ class _SearchPageState extends State<SearchPage> {
           icon: const Icon(Icons.arrow_back),
           color: Colors.white, // Change the color of the back button icon
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
           },
         ),
       ),

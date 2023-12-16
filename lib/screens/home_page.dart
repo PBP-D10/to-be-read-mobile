@@ -78,7 +78,7 @@ class HomePage extends StatelessWidget {
                 textInputAction: TextInputAction.go,
                 // readOnly: true,
                 onSubmitted: (value) {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (context) => SearchPage(
