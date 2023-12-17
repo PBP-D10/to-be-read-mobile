@@ -18,7 +18,6 @@ class BookDetailPage extends StatefulWidget {
 }
 
 class _BookDetailPageState extends State<BookDetailPage> {
-
   late Book book;
   @override
   void initState() {
@@ -177,21 +176,39 @@ class _BookDetailPageState extends State<BookDetailPage> {
                               horizontal: 36, vertical: 18),
                         ),
                         onPressed: () async {
-                          await request.postJson(
+                          var response = await request.postJson(
                               'http://127.0.0.1:8000/like_book_ajax/',
                               jsonEncode(<String, int>{'book': book.pk}));
 
-                          // // ignore: use_build_context_synchronously
-                          // Navigator.pushReplacement(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) =>
-                          //           BookDetailPage(book: book)),
-                          // );
-
-                          setState(() {
+                          if (response['status'] == 'created') {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(const SnackBar(
+                                    content: Text("Buku berhasil dilike!")));   
+                            }
                             
-                          });
+                          } else if (response['status'] == 'ALREADY_EXISTS') {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(const SnackBar(
+                                content:
+                                    Text("Anda sudah pernah like buku ini!"),
+                              ));
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text(
+                                    "Terdapat kesalahan, silakan coba lagi."),
+                              ));
+                            }
+                          }
+
+                          // refresh like count
+                          setState(() {});
                         },
                         child: const Text('Like'),
                       ),
