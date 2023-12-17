@@ -8,10 +8,23 @@ import 'package:to_be_read_mobile/models/book.dart';
 import 'package:to_be_read_mobile/screens/mytbr_page.dart';
 // import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
 
-class BookDetailPage extends StatelessWidget {
+class BookDetailPage extends StatefulWidget {
   const BookDetailPage({super.key, required this.book});
 
   final Book book;
+
+  @override
+  State<BookDetailPage> createState() => _BookDetailPageState();
+}
+
+class _BookDetailPageState extends State<BookDetailPage> {
+
+  late Book book;
+  @override
+  void initState() {
+    super.initState();
+    book = widget.book;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,16 +178,20 @@ class BookDetailPage extends StatelessWidget {
                         ),
                         onPressed: () async {
                           await request.postJson(
-                              'http://127.0.0.1:8000/like_book_ajax',
+                              'http://127.0.0.1:8000/like_book_ajax/',
                               jsonEncode(<String, int>{'book': book.pk}));
 
-                          // ignore: use_build_context_synchronously
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    BookDetailPage(book: book)),
-                          );
+                          // // ignore: use_build_context_synchronously
+                          // Navigator.pushReplacement(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) =>
+                          //           BookDetailPage(book: book)),
+                          // );
+
+                          setState(() {
+                            
+                          });
                         },
                         child: const Text('Like'),
                       ),
