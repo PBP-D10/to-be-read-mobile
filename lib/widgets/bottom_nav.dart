@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:to_be_read_mobile/screens/mytbr_page.dart';
 import 'package:to_be_read_mobile/screens/home_page.dart';
 
 class BottomNav extends StatelessWidget {
@@ -6,6 +9,7 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return BottomNavigationBar(
       elevation: 12,
       items: const <BottomNavigationBarItem>[
@@ -30,8 +34,8 @@ class BottomNav extends StatelessWidget {
           }
         else if (value == 1)
           {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const HomePage())),
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyTBReadPage())),
           }
         else if (value == 2)
           {

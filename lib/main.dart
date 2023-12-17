@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:to_be_read_mobile/screens/home_page.dart';
+import 'package:to_be_read_mobile/screens/mytbr_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -9,9 +11,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Provider(
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
       },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'TBRead',
         theme: ThemeData(
             // This is the theme of your application.
             //
@@ -40,11 +41,10 @@ class MyApp extends StatelessWidget {
             // tested with just a hot reload.
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
             useMaterial3: true,
-            textTheme: GoogleFonts.poppinsTextTheme(
-              Theme.of(context).textTheme,
-            )),
-        home: const LoginPage(),
-      ),
+          ),
+          debugShowCheckedModeBanner: false,
+          home: LoginPage(),
+      )
     );
   }
 }

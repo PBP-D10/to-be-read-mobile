@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:to_be_read_mobile/models/book.dart';
+import 'package:to_be_read_mobile/screens/mytbr_page.dart';
 // import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
 
 class BookDetailPage extends StatelessWidget {
@@ -18,7 +19,6 @@ class BookDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     return Scaffold(
-      // bottomNavigationBar: const BottomNav(),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -124,7 +124,31 @@ class BookDetailPage extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 36, vertical: 18),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          final response = await request.postJson(
+                                "http://127.0.0.1:8000/create-saved-flutter/",
+                                jsonEncode(<String, Book>{
+                                    'book': book,
+                                    // TODO: Sesuaikan field data sesuai dengan aplikasimu
+                                }));
+                                if (response['status'] == 'success') {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                    content: Text("Buku berhasil disimpan!"),
+                                    ));
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => MyTBReadPage()),
+                                    );
+                                } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                        content:
+                                            Text("Terdapat kesalahan, silakan coba lagi."),
+                                    ));
+                                }
+                            },
+                        
                         child: const Text('Save'),
                       ),
                     ),
