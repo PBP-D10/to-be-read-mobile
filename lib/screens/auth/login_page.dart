@@ -119,10 +119,6 @@ class _LoginPageState extends State<LoginPage> {
                           String username = _usernameController.text;
                           String password = _passwordController.text;
 
-                          // Cek kredensial
-                          // TODO: Ganti URL dan jangan lupa tambahkan trailing slash (/) di akhir URL!
-                          // Untuk menyambungkan Android emulator dengan Django pada localhost,
-                          // gunakan URL http://10.0.2.2/
                           final response = await request.login(
                               "http://127.0.0.1:8000/auth/login-endpoint", {
                             'username': username,
@@ -172,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                           const Text("Don't have an account? Register "),
                           InkWell(
                             onTap: () {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
