@@ -174,7 +174,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           const Text("Have an account? Login "),
                           InkWell(
                             onTap: () {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => const LoginPage()));

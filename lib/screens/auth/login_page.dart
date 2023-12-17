@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                           const Text("Don't have an account? Register "),
                           InkWell(
                             onTap: () {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
