@@ -2,6 +2,8 @@
 //
 //     final profile = profileFromJson(jsonString);
 
+// ignore_for_file: prefer_if_null_operators
+
 import 'dart:convert';
 
 List<Profile> profileFromJson(String str) => List<Profile>.from(json.decode(str).map((x) => Profile.fromJson(x)));
@@ -36,8 +38,8 @@ class Fields {
     int user;
     String name;
     String email;
-    String address;
-    dynamic dateOfBirth;
+    String? address;
+    DateTime? dateOfBirth;
 
     Fields({
         required this.user,
@@ -48,18 +50,25 @@ class Fields {
     });
 
     factory Fields.fromJson(Map<String, dynamic> json) => Fields(
-        user: json["user"],
-        name: json["name"],
-        email: json["email"],
-        address: json["address"],
-        dateOfBirth: json["date_of_birth"],
+      user: json["user"],
+      name: json["name"],
+      email: json["email"],
+      address: json["address"] != null 
+          ? json["address"] 
+          : "-",
+      dateOfBirth: json["date_of_birth"] != null
+          ? DateTime.parse(json["date_of_birth"])
+          : null,
     );
 
-    Map<String, dynamic> toJson() => {
-        "user": user,
-        "name": name,
-        "email": email,
-        "address": address,
-        "date_of_birth": dateOfBirth,
+Map<String, dynamic> toJson() => {
+      "user": user,
+      "name": name,
+      "email": email,
+      "address": address,
+      "date_of_birth": dateOfBirth != null
+          ? "${dateOfBirth?.year.toString().padLeft(4, '0')}-${dateOfBirth?.month.toString().padLeft(2, '0')}-${dateOfBirth?.day.toString().padLeft(2, '0')}"
+          : null,
     };
+
 }

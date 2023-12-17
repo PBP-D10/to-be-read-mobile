@@ -1,252 +1,407 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:to_be_read_mobile/models/profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:to_be_read_mobile/screens/auth/login_page.dart';
+import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
+import 'package:date_field/date_field.dart';
+import 'package:intl/intl.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class Profile {
-  String name;
-  String dateOfBirth;
-  String email;
-  String address;
-
-  Profile({
-    required this.name,
-    required this.dateOfBirth,
-    required this.email,
-    required this.address,
-  });
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ProfilePageState extends State<ProfilePage> {
   bool _editingProfile = false;
+  String _name = "";
+  String _email = "";
+  String? _address = "";
+  DateTime? _dateOfBirth = null;
+  final _formKey = GlobalKey<FormState>();
 
   // Profile information variable
   late Profile profile;
+  late Future<List<Profile>> profileFuture;
 
   @override
   void initState() {
     super.initState();
-    // Initialize the profile with default values
-    profile = Profile(
-      name: 'John Doe',
-      dateOfBirth: 'January 1, 1990',
-      email: 'johndoe@mail.com',
-      address: '123 Main St, Cityville, Country',
-    );
+    profileFuture = fetchProfile();
+  }
+
+  Future<List<Profile>> fetchProfile() async {
+    var url = Uri.parse('http://127.0.0.1:8000/get_profile_json_flutter');
+    var response = await http.get(url, headers: {"content-type": "application/json"});
+    var jsonString = utf8.decode(response.bodyBytes);
+    var data = jsonDecode(jsonString);
+
+    List<Profile> profiles = [];
+
+    for (var profileData in data) {
+      profiles.add(Profile.fromJson(profileData));
+    }
+
+    return profiles;
+  }
+
+
+  Future<int> fetchSavedBooks() async {
+    var url = Uri.parse('http://127.0.0.1:8000/get_saved_books_json_flutter');
+    var response = await http.get(url, headers: {"content-type": "application/json"});
+    var jsonString = utf8.decode(response.bodyBytes);
+    var data = jsonDecode(jsonString);
+
+    return data.length;
+  }
+
+  Future<void> refreshProfileData() async {
+    List<Profile> updatedProfile = await fetchProfile();
+    setState(() {
+      profile = updatedProfile.first;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
+      bottomNavigationBar: const BottomNav(),
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('Profile'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
       ),
       body: Center(
         child: SizedBox(
-          width: 400,
-          height: _editingProfile ? 500 : 400,
+          width: 500,
+          height: _editingProfile ? 500 : 470,
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(36),
               child: _editingProfile
-                  ? _buildEditProfileForm()
-                  : _buildProfileInfo(),
+                  ? FutureBuilder(
+                    future: profileFuture,
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        Profile profile= snapshot.data[0];
+                        return _buildEditProfileForm(profile,request);
+                      }
+                    },
+                  )
+                  : FutureBuilder(
+                    future: Future.wait([fetchProfile(), fetchSavedBooks()]),
+                    builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        List<dynamic> profileData = snapshot.data![0];
+                        int savedBooksCount = snapshot.data![1];
+                        Profile profile = profileData[0] as Profile;
+                        return SingleChildScrollView(
+                          child: _buildProfileInfo(profile, savedBooksCount, request),
+                        );
+                      }
+                    },
+                  )
             ),
           ),
         ),
       ),
-      floatingActionButton: _editingProfile
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  _editingProfile = true;
-                });
-              },
-              tooltip: 'Edit Profile',
-              child: const Icon(Icons.edit),
-            ),
     );
   }
 
-  Widget _buildProfileInfo() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          '${profile.name}',
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
+Widget _buildProfileInfo(Profile profile, int savedBooksCount, CookieRequest request) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: <Widget>[
+      Text(
+        '${profile.fields.name}',
+        style: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
         ),
-        Text(
-          '\nsaved 12 books on TBRead\n',
-          style: const TextStyle(
-            fontStyle: FontStyle.italic,
-            fontSize: 14,
-            color: Colors.grey,
-          ),
+      ),
+      const SizedBox(height: 16),
+      Text(
+        'Saved ${savedBooksCount} books on TBRead\n',
+        style: const TextStyle(
+          fontStyle: FontStyle.italic,
+          fontSize: 14,
+          color: Colors.grey,
         ),
+      ),
 
-        const SizedBox(height: 16),
-        Text(
-          'Date of Birth: ${profile.dateOfBirth}',
-          style: const TextStyle(
-            fontSize: 18,
-            color: Colors.grey,
+      Divider(
+        color: Colors.grey,
+        height: 20,
+        thickness: 1,
+        indent: 16,
+        endIndent: 16,
+      ), // Added divider
+
+      _buildProfileRow('Email :', profile.fields.email),
+      _buildProfileRow('Address :', "${profile.fields.address}"),
+      _buildProfileRow('Date of Birth :', formatDateTime(profile.fields.dateOfBirth)),
+
+      ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _buildEditProfileForm(profile, request);
+            _editingProfile = true;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          backgroundColor: Theme.of(context).colorScheme.primary // Increased button size
+        ),
+        child: const Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: Colors.white,
           ),
         ),
-        const SizedBox(height: 12),
-        Text(
-          'Email: ${profile.email}',
-          style: const TextStyle(
-            fontSize: 18,
-            color: Colors.grey,
+      ),
+
+      const SizedBox(height: 8),
+
+      ElevatedButton(
+        onPressed: () async {
+          final response = await request.logout('http://127.0.0.1:8000/auth/logout-endpoint');
+          String message = response["message"];
+          if (response['status']) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("$message Sampai jumpa kembali di TBRead!"),
+            ));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("$message"),
+            ));
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          backgroundColor: Colors.red // Increased button size
+        ),
+        child: const Text(
+          'Logout',
+          style: TextStyle(
+            color: Colors.white,
           ),
         ),
-        const SizedBox(height: 12),
-        Text(
-          'Address: ${profile.address}\n\n',
-          style: const TextStyle(
-            fontSize: 18,
-            color: Colors.grey,
+      ),
+    ],
+  );
+}
+
+String formatDateTime(DateTime? dateTime) {
+  if (dateTime != null) {
+    return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}\n\n';
+  } else {
+    return '-\n\n';
+  }
+}
+
+Widget _buildProfileRow(String label, String value) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start, // Align values at the top
+      children: [
+        SizedBox(
+          width: 150, // Adjust the width as needed
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+            ),
           ),
-        ), // Reduced space after the sections
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              _editingProfile = true;
-            });
-          },
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16), // Increased button size
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+            ),
           ),
-          child: const Text('Edit Profile'),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildEditProfileForm() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        TextFormField(
-          initialValue: profile.name, // Use actual user data here
-          onChanged: (value) {
-            setState(() {
-              profile.name = value;
-            });
-          },
-          decoration: const InputDecoration(
-            labelText: 'Name',
-          ),
-        ),
-        const SizedBox(height: 16), // Space between fields
-        TextFormField(
-          initialValue: profile.dateOfBirth, // Use actual user data here
-          onChanged: (value) {
-            setState(() {
-              profile.dateOfBirth = value;
-            });
-          },
-          decoration: const InputDecoration(
-            labelText: 'Date of Birth',
-          ),
-        ),
-        const SizedBox(height: 16), // Space between fields
-        TextFormField(
-          initialValue: profile.email, // Use actual user data here
-          onChanged: (value) {
-            setState(() {
-              profile.email = value;
-            });
-          },
-          decoration: const InputDecoration(
-            labelText: 'Email',
-          ),
-        ),
-        const SizedBox(height: 16), // Space between fields
-        TextFormField(
-          initialValue: profile.address, // Use actual user data here
-          onChanged: (value) {
-            setState(() {
-              profile.address = value;
-            });
-          },
-          maxLines: 2,
-          decoration: const InputDecoration(
-            labelText: 'Address',
-          ),
-        ),
-        const SizedBox(height: 36), // Space after fields
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: (){
-                setState(() {
-                  _editingProfile = false;
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                backgroundColor: Colors.red,
-              ),
-              child: const Text('Cancel'),
+  Widget _buildEditProfileForm(Profile profile,CookieRequest request) {
+
+    if (!_editingProfile) {
+      _name = profile.fields.name;
+      _email = profile.fields.email;
+      _address = profile.fields.address;
+      _dateOfBirth = profile.fields.dateOfBirth;
+    }
+
+
+    return Form(
+      key : _formKey,
+      child : Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          TextFormField(
+            initialValue: _name, // Use actual user data here
+            onChanged: (value) {
+              setState(() {
+                _name = value;
+              });
+            },
+            decoration: const InputDecoration(
+              labelText: 'Name',
+              contentPadding: const EdgeInsets.only(bottom: 8.0),
             ),
-            const SizedBox(width: 16), // Space between buttons
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Handle updating profile info
-                // You can use the profile variable here to access the updated values
-                setState(() {
-                  _editingProfile = false;
-                });
+          ),
+
+          const SizedBox(height: 16), // Space between fields
+          TextFormField(
+            initialValue: _email, // Use actual user data here
+            onChanged: (value) {
+              setState(() {
+                _email = value;
+              });
+            },
+            decoration: const InputDecoration(
+              labelText: 'Email',
+              contentPadding: const EdgeInsets.only(bottom: 8.0),
+            ),
+          ),
+
+          const SizedBox(height: 16), // Space between fields
+          TextFormField(
+            initialValue: _address, // Use actual user data here
+            onChanged: (value) {
+              setState(() {
+                _address = value;
+              });
+            },
+            decoration: const InputDecoration(
+              labelText: 'Address',
+              contentPadding: const EdgeInsets.only(bottom: 8.0),
+            ),
+          ),
+
+          const SizedBox(height: 16), // Space between fields
+          DateTimeField(
+            selectedDate: _dateOfBirth,
+            onDateSelected: (DateTime date) {
+              setState(() {
+                _dateOfBirth = date;
+              });
+            },
+            decoration: const InputDecoration(
+              labelText: 'Date of Birth',
+              contentPadding: const EdgeInsets.only(bottom: 8.0),
+            ),
+          ),
+
+          const SizedBox(height: 36), // Space after fields
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: (){
+                  setState(() {
+                    _editingProfile = false;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: Colors.white,
+                  )
+                ),
+              ),
+              const SizedBox(width: 16), // Space between buttons
+              ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  // Check if any field is modified
+                  if (_name.isNotEmpty ||
+                      _email.isNotEmpty ||
+                      _address != profile.fields.address ||
+                      _dateOfBirth != profile.fields.dateOfBirth) {
+                    // Only update the modified fields
+                    final response = await request.postJson(
+                      "http://127.0.0.1:8000/edit_profile_flutter",
+                      jsonEncode(<String, String>{
+                        'name': _name,
+                        'email': _email,
+                        'address': _address != null ? _address! : "-",
+                        'date_of_birth': _dateOfBirth != null
+                            ? DateFormat('yyyy-MM-dd').format(_dateOfBirth!)
+                            : "null",
+                      }),
+                    );
+                    if (response['status'] == 'success') {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Profile berhasil diupdate!"),
+                      ));
+                      setState(() {
+                        _editingProfile = false;
+                        refreshProfileData();
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Terdapat kesalahan, silakan coba lagi."),
+                      ));
+                    }
+                  } else {
+                    // No fields are modified
+                    setState(() {
+                      _editingProfile = false;
+                    });
+                  }
+                }
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                backgroundColor: Theme.of(context).colorScheme.primary,
               ),
-              child: const Text('Save Changes'),
+              child: const Text(
+                'Save Changes',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             ),
           ],
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 }
