@@ -19,7 +19,7 @@ class MyTBReadPage extends StatefulWidget {
 
 class _MyTBReadPageState extends State<MyTBReadPage> {
   Future<List<Book>> fetchSavedBook() async {
-    var url = Uri.parse('http://127.0.0.1:8000/get_savedBook_json/');
+    var url = Uri.parse('http://127.0.0.1:8000/get_savedBook_json');
     var response = await http.get(
       url,
       headers: {"Content-Type": "application/json"},
