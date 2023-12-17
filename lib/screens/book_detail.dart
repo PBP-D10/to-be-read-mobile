@@ -13,8 +13,6 @@ class BookDetailPage extends StatelessWidget {
 
   final Book book;
 
-  //get http => null;
-
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
