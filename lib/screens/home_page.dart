@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/models/book.dart';
 import 'package:http/http.dart' as http;
+import 'package:to_be_read_mobile/screens/search_page.dart';
 import 'dart:convert';
 
 import 'package:to_be_read_mobile/widgets/book_card.dart';
@@ -75,11 +76,19 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: TextField(
                 textInputAction: TextInputAction.go,
+                // readOnly: true,
                 onSubmitted: (value) {
-                  // print(value);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SearchPage(
+                              query: value,
+                            )),
+                  );
                 },
                 decoration: const InputDecoration(
-                  hintText: "Search",
+                  hintText:
+                      "Cari buku berdasarkan judul, penulis, penerbit, atau ISBN",
                   fillColor: Colors.white,
                   filled: true,
                   prefixIcon: Icon(Icons.search),

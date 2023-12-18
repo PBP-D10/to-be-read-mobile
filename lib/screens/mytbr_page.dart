@@ -6,7 +6,6 @@ import 'package:to_be_read_mobile/models/book.dart';
 import 'package:to_be_read_mobile/models/quote.dart';
 import 'dart:convert';
 import 'package:to_be_read_mobile/models/savedbook.dart';
-import 'package:to_be_read_mobile/screens/home_page.dart';
 import 'package:to_be_read_mobile/widgets/book_card.dart';
 import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
 
@@ -72,55 +71,56 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
     String _quote = '';
     String shown_quote ='';
     return Scaffold(
-      bottomNavigationBar: const BottomNav(),
-      body: Container(
-        color: Theme.of(context).colorScheme.primary,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,    
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-              child: Text(
-                "Welcome to My TBRead",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-                // textAlign: TextAlign.left,
-              ),
-            ),
-            const SizedBox(height: 32.0),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.background,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+        bottomNavigationBar: const BottomNav(),
+        body: Container(
+            color: Theme.of(context).colorScheme.primary,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                    child: Text(
+                      "Welcome to My TBRead",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                      // textAlign: TextAlign.left,
+                    ),
                   ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FutureBuilder(
-                      future: fetchLatestQuote(), 
-                      builder: (context, AsyncSnapshot snapshot){
-                          if (snapshot.data == null) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else {
-                            if (!snapshot.hasData || snapshot.data!.length == 0) {
-                              shown_quote = 'Insert your favorite Quote!';
-                            } else {
-                              shown_quote = ' " ${snapshot.data![snapshot.data!.length - 1].fields.text} " ';
-                            }
-                            return Center(
-                              child: 
-                                InkWell(
+                  const SizedBox(height: 32.0),
+                  Expanded(
+                      child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.background,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        FutureBuilder(
+                            future: fetchLatestQuote(),
+                            builder: (context, AsyncSnapshot snapshot) {
+                              if (snapshot.data == null) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              } else {
+                                if (!snapshot.hasData || snapshot.data!.length == 0) {
+                                  shown_quote = 'Insert your favorite Quote!';
+                                } else {
+                                  shown_quote =
+                                      ' " ${snapshot.data![snapshot.data!.length - 1].fields.text} " ';
+                                }
+                                return Center(
+                                    child: InkWell(
                                   onTap: () {
                                     showDialog(
                                       context: context,
@@ -158,6 +158,34 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                                 setState(() {
                                                     shown_quote = _quote;
                                                 });
+                                                // add code here
+                                                final response =
+                                                    await request.postJson(
+                                                        "http://127.0.0.1:8000/create-quote-flutter/",
+                                                        jsonEncode(<String,
+                                                            String>{
+                                                          'text': _quote,
+                                                        }));
+                                                if (response.statusCode ==
+                                                    200) {
+                                                  if (context.mounted) {
+                                                    Navigator.pop(context);
+                                                    Navigator.pushReplacement(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const MyTBReadPage()));
+                                                  }
+                                                } else {
+                                                  if (context.mounted) {
+                                                    ScaffoldMessenger.of(
+                                                        context)
+                                                      ..hideCurrentSnackBar()
+                                                      ..showSnackBar(const SnackBar(
+                                                          content: Text(
+                                                              "Failed to add quote!")));
+                                                  }
+                                                }
                                               },
                                               child: Text('Add Quote'),
                                             ),
