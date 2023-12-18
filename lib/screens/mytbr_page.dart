@@ -149,16 +149,6 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                             ),
                                             TextButton(
                                               onPressed: () async {
-                                                final response = await request.postJson(
-                                                  "http://127.0.0.1:8000/create-quote-flutter/",
-                                                  jsonEncode(<String, String>{
-                                                      'text':_quote,
-                                                  }));
-                                                Navigator.pop(context);
-                                                setState(() {
-                                                    shown_quote = _quote;
-                                                });
-                                                // add code here
                                                 final response =
                                                     await request.postJson(
                                                         "http://127.0.0.1:8000/create-quote-flutter/",
@@ -166,16 +156,12 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                                             String>{
                                                           'text': _quote,
                                                         }));
-                                                if (response.statusCode ==
-                                                    200) {
-                                                  if (context.mounted) {
+                                                if (response['status'] == 'success') {
+
                                                     Navigator.pop(context);
-                                                    Navigator.pushReplacement(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                const MyTBReadPage()));
-                                                  }
+                                                      setState(() {
+                                                          shown_quote = _quote;
+                                                      });
                                                 } else {
                                                   if (context.mounted) {
                                                     ScaffoldMessenger.of(
