@@ -113,7 +113,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                           if (snapshot.data == null) {
                             return const Center(child: CircularProgressIndicator());
                           } else {
-                            if (!snapshot.hasData) {
+                            if (!snapshot.hasData || snapshot.data!.length == 0) {
                               shown_quote = 'Insert your favorite Quote!';
                             } else {
                               shown_quote = ' " ${snapshot.data![snapshot.data!.length - 1].fields.text} " ';
@@ -138,7 +138,6 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                             onChanged: (String? value) {
                                               setState(() {
                                                 _quote = value!; 
-                                                shown_quote = _quote;
                                             });}
                                           ),
                                           actions: [
@@ -150,18 +149,15 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                             ),
                                             TextButton(
                                               onPressed: () async {
-                                                // add code here
                                                 final response = await request.postJson(
                                                   "http://127.0.0.1:8000/create-quote-flutter/",
                                                   jsonEncode(<String, String>{
                                                       'text':_quote,
-                                                      // TODO: Sesuaikan field data sesuai dengan aplikasimu
                                                   }));
                                                 Navigator.pop(context);
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(builder: (context) => MyTBReadPage())
-                                                );
+                                                setState(() {
+                                                    shown_quote = _quote;
+                                                });
                                               },
                                               child: Text('Add Quote'),
                                             ),
@@ -192,10 +188,10 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                           if (snapshot.data == null) {
                             return const Center(child: CircularProgressIndicator());
                           } else {
-                            if (!snapshot.hasData) {
+                            if (!snapshot.hasData || snapshot.data!.length == 0) {
                               return const Column(
                                 children: [
-                                  Text('Currently, there are no books to be read 😣', style: TextStyle(fontSize: 18, color: Color(0xff59A5D8))),
+                                  Text('Currently, there are no books to be read 😣', style: TextStyle(fontSize: 18)),
                                   SizedBox(height: 8),
                                 ],
                               );
@@ -203,11 +199,38 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                               return ListView.builder(
                                   itemCount: snapshot.data!.length,
                                   itemBuilder: (_, index) =>
-                                      BookCard(book: snapshot.data![index]),
+                                    Row(
+                                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                          Expanded(child: BookCard(book: snapshot.data![index]),),
+                                          const SizedBox(width: 5),
+                                          Container(
+                                            width: 120,
+                                            height: 160,
+                                            child: 
+                                            IconButton(
+                                            onPressed: () async {
+                                              final response = await request.postJson(
+                                                "http://127.0.0.1:8000/remove-saved-flutter/",
+                                                jsonEncode(<String, Book>{
+                                                    'book': snapshot.data![index],
+                                                }));
+                                              setState(() {
+                                                  fetchSavedBook();
+                                              });
+                                            },
+                                            icon: Icon(Icons.check),
+                                          )
+                                        )  
+                                      ],
+                                    )
                                   );
                             }
                           }
-                        }),
+                        }
+                      ),
                     ),
                   ],
                 ),

@@ -123,7 +123,13 @@ class BookDetailPage extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(builder: (context) => MyTBReadPage()),
                                     );
-                                } else {
+                                } else if(response['status'] == 'already exist'){
+                                    ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                      content: Text("Buku sudah pernah disimpan!"),
+                                      ));
+                                }
+                                else {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(const SnackBar(
                                         content:
