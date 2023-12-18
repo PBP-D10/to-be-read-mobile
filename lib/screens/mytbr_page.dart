@@ -13,65 +13,63 @@ class MyTBReadPage extends StatefulWidget {
   const MyTBReadPage({super.key});
 
   @override
-  _MyTBReadPageState createState() => _MyTBReadPageState();
+  State<MyTBReadPage> createState() => _MyTBReadPageState();
 }
 
 class _MyTBReadPageState extends State<MyTBReadPage> {
-    Future<List<Book>> fetchSavedBook() async {
-      var url = Uri.parse(
-        'http://127.0.0.1:8000/get_savedBook_json/');
-      var response = await http.get(
-          url,
+  Future<List<Book>> fetchSavedBook() async {
+    var url = Uri.parse('http://127.0.0.1:8000/get_savedBook_json/');
+    var response = await http.get(
+      url,
+      headers: {"Content-Type": "application/json"},
+    );
+
+    // melakukan decode response menjadi bentuk json
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    List<Book> savedBook = [];
+    for (var d in data) {
+      if (d != null) {
+        var theUrl = Uri.parse(
+            'http://127.0.0.1:8000/book_by_id/${SavedBook.fromJson(d).fields.book}/');
+        var theResponse = await http.get(
+          theUrl,
           headers: {"Content-Type": "application/json"},
-      );
-
-      // melakukan decode response menjadi bentuk json
-      var data = jsonDecode(utf8.decode(response.bodyBytes));
-
-      List<Book> saved_book = [];
-      for (var d in data) {
-          if (d != null) {
-              var theUrl = Uri.parse(
-                'http://127.0.0.1:8000/book_by_id/${SavedBook.fromJson(d).fields.book}/');
-              var theResponse = await http.get(
-                  theUrl,
-                  headers: {"Content-Type": "application/json"},
-              );
-              var theBook = jsonDecode(utf8.decode(theResponse.bodyBytes));
-              saved_book.add(Book.fromJson(theBook[0]));
-          }
+        );
+        var theBook = jsonDecode(utf8.decode(theResponse.bodyBytes));
+        savedBook.add(Book.fromJson(theBook[0]));
       }
-      return saved_book;
+    }
+    return savedBook;
   }
 
-    Future<List<Quote>> fetchLatestQuote() async {
-       var url = Uri.parse(
-        'http://127.0.0.1:8000/get-quote/');
-      var response = await http.get(
-          url,
-          headers: {"Content-Type": "application/json"},
-      );
+  Future<List<Quote>> fetchLatestQuote() async {
+    var url = Uri.parse('http://127.0.0.1:8000/get-quote/');
+    var response = await http.get(
+      url,
+      headers: {"Content-Type": "application/json"},
+    );
 
-      // melakukan decode response menjadi bentuk json
-      var data = jsonDecode(utf8.decode(response.bodyBytes));
+    // melakukan decode response menjadi bentuk json
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
 
-      // melakukan konversi data json menjadi object Item
-      List<Quote> quotes = [];
-      for (var d in data) {
-          if (d != null) {
-              quotes.add(Quote.fromJson(d));
-          }
+    // melakukan konversi data json menjadi object Item
+    List<Quote> quotes = [];
+    for (var d in data) {
+      if (d != null) {
+        quotes.add(Quote.fromJson(d));
       }
-      return quotes;
+    }
+    return quotes;
   }
 
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
-    String _quote = '';
-    String shown_quote ='';
+    String quote = '';
+    String shownQuote = '';
     return Scaffold(
-        bottomNavigationBar: const BottomNav(),
+        bottomNavigationBar: const BottomNav(currentIndex: 1),
         body: Container(
             color: Theme.of(context).colorScheme.primary,
             child: Column(
@@ -82,13 +80,22 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
                     child: Text(
-                      "Welcome to My TBRead",
+                      "Your Saved Books",
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
                       ),
                       // textAlign: TextAlign.left,
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      "Here are the books you saved!",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32.0),
@@ -113,10 +120,11 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                 return const Center(
                                     child: CircularProgressIndicator());
                               } else {
-                                if (!snapshot.hasData || snapshot.data!.length == 0) {
-                                  shown_quote = 'Insert your favorite Quote!';
+                                if (!snapshot.hasData ||
+                                    snapshot.data!.length == 0) {
+                                  shownQuote = 'Insert your favorite Quote!';
                                 } else {
-                                  shown_quote =
+                                  shownQuote =
                                       ' " ${snapshot.data![snapshot.data!.length - 1].fields.text} " ';
                                 }
                                 return Center(
@@ -126,26 +134,28 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text('Add Your favorite Quote!'),
+                                          title: const Text(
+                                              'Add Your favorite Quote!'),
                                           content: TextFormField(
-                                            decoration: 
-                                            InputDecoration(
-                                              hintText: 'Enter your quote',
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(5.0),
+                                              decoration: InputDecoration(
+                                                hintText: 'Enter your quote',
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                ),
                                               ),
-                                            ),
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _quote = value!; 
-                                            });}
-                                          ),
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  quote = value!;
+                                                });
+                                              }),
                                           actions: [
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               },
-                                              child: Text('Cancel'),
+                                              child: const Text('Cancel'),
                                             ),
                                             TextButton(
                                               onPressed: () async {
@@ -154,14 +164,16 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                                         "http://127.0.0.1:8000/create-quote-flutter/",
                                                         jsonEncode(<String,
                                                             String>{
-                                                          'text': _quote,
+                                                          'text': quote,
                                                         }));
-                                                if (response['status'] == 'success') {
-
+                                                if (response['status'] ==
+                                                    'success') {
+                                                  if (context.mounted) {
                                                     Navigator.pop(context);
-                                                      setState(() {
-                                                          fetchLatestQuote();
-                                                      });
+                                                  }
+                                                  setState(() {
+                                                    fetchLatestQuote();
+                                                  });
                                                 } else {
                                                   if (context.mounted) {
                                                     ScaffoldMessenger.of(
@@ -173,7 +185,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                                   }
                                                 }
                                               },
-                                              child: Text('Add Quote'),
+                                              child: const Text('Add Quote'),
                                             ),
                                           ],
                                         );
@@ -181,78 +193,86 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                     );
                                   },
                                   child: Text(
-                                    shown_quote,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                    shownQuote,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 )
-                              //]
-                            );
-                          }
-                          
-                      }),
-                    const SizedBox(height: 18.0),
-                    Expanded(
-                      child: FutureBuilder(
-                        future: fetchSavedBook(),
-                        builder: (context, AsyncSnapshot snapshot) {
-                          if (snapshot.data == null) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else {
-                            if (!snapshot.hasData || snapshot.data!.length == 0) {
-                              return const Column(
-                                children: [
-                                  Text('Currently, there are no books to be read 😣', style: TextStyle(fontSize: 18)),
-                                  SizedBox(height: 8),
-                                ],
-                              );
-                            } else {
-                              return ListView.builder(
-                                  itemCount: snapshot.data!.length,
-                                  itemBuilder: (_, index) =>
-                                    Row(
-                                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
+                                    //]
+                                    );
+                              }
+                            }),
+                        const SizedBox(height: 18.0),
+                        Expanded(
+                          child: FutureBuilder(
+                              future: fetchSavedBook(),
+                              builder: (context, AsyncSnapshot snapshot) {
+                                if (snapshot.data == null) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else {
+                                  if (!snapshot.hasData ||
+                                      snapshot.data!.length == 0) {
+                                    return const Column(
                                       children: [
-                                          Expanded(child: BookCard(book: snapshot.data![index]),),
-                                          const SizedBox(width: 5),
-                                          Container(
-                                            width: 120,
-                                            height: 160,
-                                            child: 
-                                            IconButton(
-                                            onPressed: () async {
-                                              final response = await request.postJson(
-                                                "http://127.0.0.1:8000/remove-saved-flutter/",
-                                                jsonEncode(<String, Book>{
-                                                    'book': snapshot.data![index],
-                                                }));
-                                              setState(() {
-                                                  fetchSavedBook();
-                                              });
-                                            },
-                                            icon: Icon(Icons.check),
-                                          )
-                                        )  
+                                        Text(
+                                            'Currently, there are no books to be read 😣',
+                                            style: TextStyle(fontSize: 18)),
+                                        SizedBox(height: 8),
                                       ],
-                                    )
-                                  );
-                            }
-                          }
-                        }
-                      ),
+                                    );
+                                  } else {
+                                    return ListView.builder(
+                                        itemCount: snapshot.data!.length,
+                                        itemBuilder: (_, index) => Row(
+                                              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Expanded(
+                                                  child: BookCard(
+                                                      book: snapshot
+                                                          .data![index]),
+                                                ),
+                                                const SizedBox(width: 5),
+                                                SizedBox(
+                                                    width: 120,
+                                                    height: 160,
+                                                    child: IconButton(
+                                                      onPressed: () async {
+                                                        final response = await request
+                                                            .postJson(
+                                                                "http://127.0.0.1:8000/remove-saved-flutter/",
+                                                                jsonEncode(<String,
+                                                                    Book>{
+                                                                  'book': snapshot
+                                                                          .data![
+                                                                      index],
+                                                                }));
+                                                        if (response[
+                                                                'status'] ==
+                                                            'success') {
+                                                          setState(() {
+                                                            fetchSavedBook();
+                                                          });
+                                                        }
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.check),
+                                                    ))
+                                              ],
+                                            ));
+                                  }
+                                }
+                              }),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )
-            )
-          ]
-        )
-      )
-    );
+                  ))
+                ])));
   }
 }

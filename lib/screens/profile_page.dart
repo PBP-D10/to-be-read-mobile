@@ -23,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String _name = "";
   String _email = "";
   String? _address = "";
-  DateTime? _dateOfBirth = null;
+  DateTime? _dateOfBirth;
   final _formKey = GlobalKey<FormState>();
 
   // Profile information variable
@@ -38,7 +38,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<List<Profile>> fetchProfile() async {
     var url = Uri.parse('http://127.0.0.1:8000/get_profile_json_flutter');
-    var response = await http.get(url, headers: {"content-type": "application/json"});
+    var response =
+        await http.get(url, headers: {"content-type": "application/json"});
     var jsonString = utf8.decode(response.bodyBytes);
     var data = jsonDecode(jsonString);
 
@@ -51,10 +52,10 @@ class _ProfilePageState extends State<ProfilePage> {
     return profiles;
   }
 
-
   Future<int> fetchSavedBooks() async {
     var url = Uri.parse('http://127.0.0.1:8000/get_saved_books_json_flutter');
-    var response = await http.get(url, headers: {"content-type": "application/json"});
+    var response =
+        await http.get(url, headers: {"content-type": "application/json"});
     var jsonString = utf8.decode(response.bodyBytes);
     var data = jsonDecode(jsonString);
 
@@ -72,7 +73,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     return Scaffold(
-      bottomNavigationBar: const BottomNav(),
+      bottomNavigationBar: const BottomNav(
+        currentIndex: 2,
+      ),
       appBar: AppBar(
         title: const Text('Profile'),
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -84,176 +87,183 @@ class _ProfilePageState extends State<ProfilePage> {
           height: _editingProfile ? 500 : 470,
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.all(36),
-              child: _editingProfile
-                  ? FutureBuilder(
-                    future: profileFuture,
-                    builder: (context, AsyncSnapshot snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        Profile profile= snapshot.data[0];
-                        return _buildEditProfileForm(profile,request);
-                      }
-                    },
-                  )
-                  : FutureBuilder(
-                    future: Future.wait([fetchProfile(), fetchSavedBooks()]),
-                    builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        List<dynamic> profileData = snapshot.data![0];
-                        int savedBooksCount = snapshot.data![1];
-                        Profile profile = profileData[0] as Profile;
-                        return SingleChildScrollView(
-                          child: _buildProfileInfo(profile, savedBooksCount, request),
-                        );
-                      }
-                    },
-                  )
-            ),
+                padding: const EdgeInsets.all(36),
+                child: _editingProfile
+                    ? FutureBuilder(
+                        future: profileFuture,
+                        builder: (context, AsyncSnapshot snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            Profile profile = snapshot.data[0];
+                            return _buildEditProfileForm(profile, request);
+                          }
+                        },
+                      )
+                    : FutureBuilder(
+                        future:
+                            Future.wait([fetchProfile(), fetchSavedBooks()]),
+                        builder:
+                            (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            List<dynamic> profileData = snapshot.data![0];
+                            int savedBooksCount = snapshot.data![1];
+                            Profile profile = profileData[0] as Profile;
+                            return SingleChildScrollView(
+                              child: _buildProfileInfo(
+                                  profile, savedBooksCount, request),
+                            );
+                          }
+                        },
+                      )),
           ),
         ),
       ),
     );
   }
 
-Widget _buildProfileInfo(Profile profile, int savedBooksCount, CookieRequest request) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: <Widget>[
-      Text(
-        '${profile.fields.name}',
-        style: const TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
+  Widget _buildProfileInfo(
+      Profile profile, int savedBooksCount, CookieRequest request) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          profile.fields.name,
+          style: const TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-      ),
-      const SizedBox(height: 16),
-      Text(
-        'Saved ${savedBooksCount} books on TBRead\n',
-        style: const TextStyle(
-          fontStyle: FontStyle.italic,
-          fontSize: 14,
+        const SizedBox(height: 16),
+        Text(
+          'Saved $savedBooksCount books on TBRead\n',
+          style: const TextStyle(
+            fontStyle: FontStyle.italic,
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+        ),
+
+        Divider(
           color: Colors.grey,
-        ),
-      ),
+          height: 20,
+          thickness: 1,
+          indent: 16,
+          endIndent: 16,
+        ), // Added divider
 
-      Divider(
-        color: Colors.grey,
-        height: 20,
-        thickness: 1,
-        indent: 16,
-        endIndent: 16,
-      ), // Added divider
+        _buildProfileRow('Email :', profile.fields.email),
+        _buildProfileRow('Address :', "${profile.fields.address}"),
+        _buildProfileRow(
+            'Date of Birth :', formatDateTime(profile.fields.dateOfBirth)),
 
-      _buildProfileRow('Email :', profile.fields.email),
-      _buildProfileRow('Address :', "${profile.fields.address}"),
-      _buildProfileRow('Date of Birth :', formatDateTime(profile.fields.dateOfBirth)),
-
-      ElevatedButton(
-        onPressed: () {
-          setState(() {
-            _buildEditProfileForm(profile, request);
-            _editingProfile = true;
-          });
-        },
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          backgroundColor: Theme.of(context).colorScheme.primary // Increased button size
-        ),
-        child: const Text(
-          'Edit Profile',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      ),
-
-      const SizedBox(height: 8),
-
-      ElevatedButton(
-        onPressed: () async {
-          final response = await request.logout('http://127.0.0.1:8000/auth/logout-endpoint');
-          String message = response["message"];
-          if (response['status']) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("$message Sampai jumpa kembali di TBRead!"),
-            ));
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginPage()),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("$message"),
-            ));
-          }
-        },
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          backgroundColor: Colors.red // Increased button size
-        ),
-        child: const Text(
-          'Logout',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-String formatDateTime(DateTime? dateTime) {
-  if (dateTime != null) {
-    return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}\n\n';
-  } else {
-    return '-\n\n';
-  }
-}
-
-Widget _buildProfileRow(String label, String value) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start, // Align values at the top
-      children: [
-        SizedBox(
-          width: 150, // Adjust the width as needed
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.black,
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _buildEditProfileForm(profile, request);
+              _editingProfile = true;
+            });
+          },
+          style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              backgroundColor:
+                  Theme.of(context).colorScheme.primary // Increased button size
+              ),
+          child: const Text(
+            'Edit Profile',
+            style: TextStyle(
+              color: Colors.white,
             ),
           ),
         ),
-        const SizedBox(width: 8),
-        Flexible(
-          child: Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.black,
+
+        const SizedBox(height: 8),
+
+        ElevatedButton(
+          onPressed: () async {
+            final response = await request
+                .logout('http://127.0.0.1:8000/auth/logout-endpoint');
+            String message = response["message"];
+            if (response['status']) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("$message Sampai jumpa kembali di TBRead!"),
+              ));
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(message),
+              ));
+            }
+          },
+          style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              backgroundColor: Colors.red // Increased button size
+              ),
+          child: const Text(
+            'Logout',
+            style: TextStyle(
+              color: Colors.white,
             ),
           ),
         ),
       ],
-    ),
-  );
-}
+    );
+  }
 
-  Widget _buildEditProfileForm(Profile profile,CookieRequest request) {
+  String formatDateTime(DateTime? dateTime) {
+    if (dateTime != null) {
+      return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}\n\n';
+    } else {
+      return '-\n\n';
+    }
+  }
 
+  Widget _buildProfileRow(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start, // Align values at the top
+        children: [
+          SizedBox(
+            width: 150, // Adjust the width as needed
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditProfileForm(Profile profile, CookieRequest request) {
     if (!_editingProfile) {
       _name = profile.fields.name;
       _email = profile.fields.email;
@@ -261,10 +271,9 @@ Widget _buildProfileRow(String label, String value) {
       _dateOfBirth = profile.fields.dateOfBirth;
     }
 
-
     return Form(
-      key : _formKey,
-      child : Column(
+      key: _formKey,
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center, // Center vertically
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -278,7 +287,7 @@ Widget _buildProfileRow(String label, String value) {
             },
             decoration: const InputDecoration(
               labelText: 'Name',
-              contentPadding: const EdgeInsets.only(bottom: 8.0),
+              contentPadding: EdgeInsets.only(bottom: 8.0),
             ),
           ),
 
@@ -292,7 +301,7 @@ Widget _buildProfileRow(String label, String value) {
             },
             decoration: const InputDecoration(
               labelText: 'Email',
-              contentPadding: const EdgeInsets.only(bottom: 8.0),
+              contentPadding: EdgeInsets.only(bottom: 8.0),
             ),
           ),
 
@@ -306,7 +315,7 @@ Widget _buildProfileRow(String label, String value) {
             },
             decoration: const InputDecoration(
               labelText: 'Address',
-              contentPadding: const EdgeInsets.only(bottom: 8.0),
+              contentPadding: EdgeInsets.only(bottom: 8.0),
             ),
           ),
 
@@ -320,7 +329,7 @@ Widget _buildProfileRow(String label, String value) {
             },
             decoration: const InputDecoration(
               labelText: 'Date of Birth',
-              contentPadding: const EdgeInsets.only(bottom: 8.0),
+              contentPadding: EdgeInsets.only(bottom: 8.0),
             ),
           ),
 
@@ -329,79 +338,82 @@ Widget _buildProfileRow(String label, String value) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   setState(() {
                     _editingProfile = false;
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   backgroundColor: Colors.red,
                 ),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(
-                    color: Colors.white,
-                  )
-                ),
+                child: const Text('Cancel',
+                    style: TextStyle(
+                      color: Colors.white,
+                    )),
               ),
               const SizedBox(width: 16), // Space between buttons
               ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  // Check if any field is modified
-                  if (_name.isNotEmpty ||
-                      _email.isNotEmpty ||
-                      _address != profile.fields.address ||
-                      _dateOfBirth != profile.fields.dateOfBirth) {
-                    // Only update the modified fields
-                    final response = await request.postJson(
-                      "http://127.0.0.1:8000/edit_profile_flutter",
-                      jsonEncode(<String, String>{
-                        'name': _name,
-                        'email': _email,
-                        'address': _address != null ? _address! : "-",
-                        'date_of_birth': _dateOfBirth != null
-                            ? DateFormat('yyyy-MM-dd').format(_dateOfBirth!)
-                            : "null",
-                      }),
-                    );
-                    if (response['status'] == 'success') {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Profile berhasil diupdate!"),
-                      ));
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    // Check if any field is modified
+                    if (_name.isNotEmpty ||
+                        _email.isNotEmpty ||
+                        _address != profile.fields.address ||
+                        _dateOfBirth != profile.fields.dateOfBirth) {
+                      // Only update the modified fields
+                      final response = await request.postJson(
+                        "http://127.0.0.1:8000/edit_profile_flutter",
+                        jsonEncode(<String, String>{
+                          'name': _name,
+                          'email': _email,
+                          'address': _address != null ? _address! : "-",
+                          'date_of_birth': _dateOfBirth != null
+                              ? DateFormat('yyyy-MM-dd').format(_dateOfBirth!)
+                              : "null",
+                        }),
+                      );
+                      if (response['status'] == 'success') {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text("Profile berhasil diupdate!"),
+                        ));
+                        setState(() {
+                          _editingProfile = false;
+                          refreshProfileData();
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content:
+                              Text("Terdapat kesalahan, silakan coba lagi."),
+                        ));
+                      }
+                    } else {
+                      // No fields are modified
                       setState(() {
                         _editingProfile = false;
-                        refreshProfileData();
                       });
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Terdapat kesalahan, silakan coba lagi."),
-                      ));
                     }
-                  } else {
-                    // No fields are modified
-                    setState(() {
-                      _editingProfile = false;
-                    });
                   }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-              ),
-              child: const Text(
-                'Save Changes',
-                style: TextStyle(
-                  color: Colors.white,
+                },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                ),
+                child: const Text(
+                  'Save Changes',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -136,35 +136,35 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         ),
                         onPressed: () async {
                           final response = await request.postJson(
-                                "http://127.0.0.1:8000/create-saved-flutter/",
-                                jsonEncode(<String, Book>{
-                                    'book': book,
-                                    // TODO: Sesuaikan field data sesuai dengan aplikasimu
-                                }));
-                                if (response['status'] == 'success') {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                    content: Text("Buku berhasil disimpan!"),
-                                    ));
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => MyTBReadPage()),
-                                    );
-                                } else if(response['status'] == 'already exist'){
-                                    ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                      content: Text("Buku sudah pernah disimpan!"),
-                                      ));
-                                }
-                                else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                        content:
-                                            Text("Terdapat kesalahan, silakan coba lagi."),
-                                    ));
-                                }
-                            },
-                        
+                              "http://127.0.0.1:8000/create-saved-flutter/",
+                              jsonEncode(<String, Book>{
+                                'book': book,
+                              }));
+                          if (context.mounted) {
+                            if (response['status'] == 'success') {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text("Buku berhasil disimpan!"),
+                              ));
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MyTBReadPage()),
+                              );
+                            } else if (response['status'] == 'already exist') {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text("Buku sudah pernah disimpan!"),
+                              ));
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text(
+                                    "Terdapat kesalahan, silakan coba lagi."),
+                              ));
+                            }
+                          }
+                        },
                         child: const Text('Save'),
                       ),
                     ),
@@ -179,7 +179,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         ),
                         onPressed: () async {
                           var response = await request.postJson(
-                              'http://127.0.0.1:8000/like_book_ajax/',
+                              'http://127.0.0.1:8000/like_book_ajax',
                               jsonEncode(<String, int>{'book': book.pk}));
 
                           if (response['status'] == 'created') {
@@ -187,17 +187,16 @@ class _BookDetailPageState extends State<BookDetailPage> {
                               ScaffoldMessenger.of(context)
                                 ..hideCurrentSnackBar()
                                 ..showSnackBar(const SnackBar(
-                                    content: Text("Buku berhasil dilike!")));   
+                                    content: Text("Buku berhasil dilike!")));
                             }
-                            
                           } else if (response['status'] == 'ALREADY_EXISTS') {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context)
-                                  ..hideCurrentSnackBar()
-                                  ..showSnackBar(const SnackBar(
-                                content:
-                                    Text("Anda sudah pernah like buku ini!"),
-                              ));
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(const SnackBar(
+                                  content:
+                                      Text("Anda sudah pernah like buku ini!"),
+                                ));
                             }
                           } else {
                             if (context.mounted) {
@@ -230,6 +229,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 30),
               ],
             ),
           ),

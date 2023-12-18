@@ -6,7 +6,9 @@ import 'package:to_be_read_mobile/screens/home_page.dart';
 import 'package:to_be_read_mobile/screens/profile_page.dart';
 
 class BottomNav extends StatelessWidget {
-  const BottomNav({super.key});
+  const BottomNav({super.key, this.currentIndex = 0});
+
+  final int currentIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class BottomNav extends StatelessWidget {
           label: 'Profile',
         ),
       ],
+      currentIndex: currentIndex,
       onTap: (value) => {
         if (value == 0)
           {
