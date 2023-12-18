@@ -84,7 +84,7 @@ class PublisherPage extends StatelessWidget {
                 // Kode untuk publish book
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => BookFormPage()),
+                  MaterialPageRoute(builder: (context) => const BookFormPage()),
                 );
               },
             ),
