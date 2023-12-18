@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:to_be_read_mobile/screens/edit_book.dart';
 import 'package:to_be_read_mobile/screens/houses_page.dart';
 import 'package:to_be_read_mobile/screens/publish_book_form.dart';
@@ -47,7 +45,7 @@ class PublisherPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const BottomNav(),
+      bottomNavigationBar: const BottomNav(currentIndex: 2),
       appBar: AppBar(
         title: const Text('Publisher'),
         backgroundColor: Theme.of(context).colorScheme.primary,
