@@ -136,33 +136,35 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         ),
                         onPressed: () async {
                           final response = await request.postJson(
-                              "http://127.0.0.1:8000/create-saved-flutter/",
-                              jsonEncode(<String, Book>{
-                                'book': book,
-                                // TODO: Sesuaikan field data sesuai dengan aplikasimu
-                              }));
-                          if (response['status'] == 'success') {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text("Buku berhasil disimpan!"),
-                              ));
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const MyTBReadPage()),
-                              );
-                            }
-                          } else {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                    "Terdapat kesalahan, silakan coba lagi."),
-                              ));
-                            }
-                          }
-                        },
+                                "http://127.0.0.1:8000/create-saved-flutter/",
+                                jsonEncode(<String, Book>{
+                                    'book': book,
+                                    // TODO: Sesuaikan field data sesuai dengan aplikasimu
+                                }));
+                                if (response['status'] == 'success') {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                    content: Text("Buku berhasil disimpan!"),
+                                    ));
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => MyTBReadPage()),
+                                    );
+                                } else if(response['status'] == 'already exist'){
+                                    ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                      content: Text("Buku sudah pernah disimpan!"),
+                                      ));
+                                }
+                                else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                        content:
+                                            Text("Terdapat kesalahan, silakan coba lagi."),
+                                    ));
+                                }
+                            },
+                        
                         child: const Text('Save'),
                       ),
                     ),
