@@ -212,16 +212,19 @@ class _BookFormPageState extends State<BookFormPage> {
                             }),
                           );
                           if (response['status'] == 'success') {
+                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text("New book has been saved!"),
                               ),
                             );
+                            // ignore: use_build_context_synchronously
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => HomePage()),
+                              MaterialPageRoute(builder: (context) => const HomePage()),
                             );
                           } else {
+                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text("ERROR, please try again!"),
@@ -229,6 +232,7 @@ class _BookFormPageState extends State<BookFormPage> {
                             );
                           }
                         } catch (e) {
+                          // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("Network error: $e"),
