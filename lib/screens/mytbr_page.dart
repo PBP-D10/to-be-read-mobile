@@ -160,7 +160,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
 
                                                     Navigator.pop(context);
                                                       setState(() {
-                                                          shown_quote = _quote;
+                                                          fetchLatestQuote();
                                                       });
                                                 } else {
                                                   if (context.mounted) {
