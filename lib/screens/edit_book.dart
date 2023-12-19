@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/models/book.dart';
+import 'package:to_be_read_mobile/screens/edit_book_form.dart';
 
 class EditBookCard extends StatelessWidget {
   final Book book;
@@ -57,17 +58,17 @@ class EditBookCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // ElevatedButton(
-                //   onPressed: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) => EditBookForm(book: book),
-                //       ),
-                //     );
-                //   },
-                //   child: const Text('Edit'),
-                // ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditBookForm(book: book),
+                      ),
+                    );
+                  },
+                  child: const Text('Edit'),
+                ),
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
@@ -88,7 +89,8 @@ class EditBookPage extends StatelessWidget {
   const EditBookPage({Key? key}) : super(key: key);
 
   Future<List<Book>> fetchBooks() async {
-    var url = Uri.parse('http://127.0.0.1:8000/api/books/');
+    var url = Uri.parse(
+        'http://https://web-production-fd753.up.railway.app/api/books/');
     var response = await http.get(url);
 
     var data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -127,4 +129,21 @@ class EditBookPage extends StatelessWidget {
       ),
     );
   }
+}
+
+// Pindahkan fungsi fetchBooks ke luar kelas EditBookPage
+Future<List<Book>> fetchBooks() async {
+  var url = Uri.parse(
+      'http://https://web-production-fd753.up.railway.app/api/books/');
+  var response = await http.get(url);
+
+  var data = jsonDecode(utf8.decode(response.bodyBytes));
+
+  List<Book> listBook = [];
+  for (var d in data) {
+    if (d != null) {
+      listBook.add(Book.fromJson(d));
+    }
+  }
+  return listBook;
 }

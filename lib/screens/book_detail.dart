@@ -136,7 +136,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         ),
                         onPressed: () async {
                           final response = await request.postJson(
-                              "http://127.0.0.1:8000/create-saved-flutter/",
+                              "http://https://web-production-fd753.up.railway.app/create-saved-flutter/",
                               jsonEncode(<String, Book>{
                                 'book': book,
                               }));
@@ -179,7 +179,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         ),
                         onPressed: () async {
                           var response = await request.postJson(
-                              'http://127.0.0.1:8000/like_book_ajax',
+                              'http://https://web-production-fd753.up.railway.app/like_book_ajax',
                               jsonEncode(<String, int>{'book': book.pk}));
 
                           if (response['status'] == 'created') {
@@ -239,7 +239,8 @@ class _BookDetailPageState extends State<BookDetailPage> {
   }
 
   Future<int> getLikeCount() async {
-    var url = Uri.parse('http://127.0.0.1:8000/like-count/${book.pk}/');
+    var url = Uri.parse(
+        'http://https://web-production-fd753.up.railway.app/like-count/${book.pk}/');
     var response = await http.get(
       url,
     );

@@ -137,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 horizontal: 36, vertical: 18)),
                         onPressed: () async {
                           var url = Uri.parse(
-                              "http://127.0.0.1:8000/auth/register-endpoint");
+                              "http://https://web-production-fd753.up.railway.app/auth/register-endpoint");
 
                           var response = await http.post(url, body: {
                             'username': _usernameController.text,

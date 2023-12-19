@@ -24,7 +24,7 @@ class PublisherPage extends StatelessWidget {
   const PublisherPage({Key? key}) : super(key: key);
 
   // Future<IsPublisher> checkIsPublisher() async {
-  //   var url = Uri.parse('http://127.0.0.1:8000/publisher/check/');
+  //   var url = Uri.parse('http://https://web-production-fd753.up.railway.app/publisher/check/');
 
   //   try {
   //     var response = await http.get(url);
@@ -79,7 +79,7 @@ class PublisherPage extends StatelessWidget {
               title: 'Publish Book',
               icon: Icons.publish,
               onTap: () {
-                // Kode untuk publish book
+                // Kode untuk publish bookD
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const BookFormPage()),
@@ -93,7 +93,7 @@ class PublisherPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EditBookPage()),
+                  MaterialPageRoute(builder: (context) => const EditBookPage()),
                 );
               },
             ),
@@ -141,7 +141,8 @@ class CardButton extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 title,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ],
