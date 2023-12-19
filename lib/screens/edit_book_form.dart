@@ -276,7 +276,6 @@ class _EditBookFormState extends State<EditBookForm> {
                             'image_l': _imageLController.text,
                           }),
                         );
-
                         if (context.mounted) {
                           if (response['status'] == 'success') {
                             ScaffoldMessenger.of(context).showSnackBar(

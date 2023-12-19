@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/models/publisher_house.dart';
 
+
 class HouseCard extends StatelessWidget {
   final PublisherHouse house;
 

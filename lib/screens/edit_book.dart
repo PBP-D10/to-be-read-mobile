@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/models/book.dart';
 import 'package:to_be_read_mobile/screens/edit_book_form.dart';
 
+
 class EditBookCard extends StatelessWidget {
   final Book book;
 
