@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                           String password = _passwordController.text;
 
                           final response = await request.login(
-                              "https://web-production-fd753.up.railway.appauth/login-endpoint",
+                              "https://web-production-fd753.up.railway.app/auth/login-endpoint",
                               {
                                 'username': username,
                                 'password': password,

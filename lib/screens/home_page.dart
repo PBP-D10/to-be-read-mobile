@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
 
   Future<List<Book>> fetchBooks() async {
     var url =
-        Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
+        Uri.parse('https://web-production-fd753.up.railway.app/api/books/');
     var response = await http.get(
       url,
       // headers: {"Content-Type": "application/json"},
