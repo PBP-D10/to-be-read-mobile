@@ -11,7 +11,8 @@ class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   Future<List<Book>> fetchBooks() async {
-    var url = Uri.parse('http://127.0.0.1:8000/api/books/');
+    var url =
+        Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
     var response = await http.get(
       url,
       // headers: {"Content-Type": "application/json"},

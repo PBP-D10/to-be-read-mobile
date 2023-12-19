@@ -90,7 +90,6 @@ class UserService {
         return false;
       }
     } catch (e) {
-      print('Error checking publisher status: $e');
       return false;
     }
   }

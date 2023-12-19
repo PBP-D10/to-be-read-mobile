@@ -9,12 +9,14 @@ import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
 
 class HousesPage extends StatelessWidget {
   Future<List<PublisherHouse>> fetchPublisherHouses() async {
-    var url = Uri.parse('http://127.0.0.1:8000/publisher/get-houses/');
+    var url = Uri.parse(
+        'https://web-production-fd753.up.railway.apppublisher/get-houses/');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
       var data = jsonDecode(utf8.decode(response.bodyBytes));
-      return List<PublisherHouse>.from(data.map((x) => PublisherHouse.fromJson(x)));
+      return List<PublisherHouse>.from(
+          data.map((x) => PublisherHouse.fromJson(x)));
     } else {
       throw Exception('Failed to load publisher houses');
     }
@@ -47,7 +49,8 @@ class HousesPage extends StatelessWidget {
               ),
               FutureBuilder(
                 future: fetchPublisherHouses(),
-                builder: (context, AsyncSnapshot<List<PublisherHouse>> snapshot) {
+                builder:
+                    (context, AsyncSnapshot<List<PublisherHouse>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
