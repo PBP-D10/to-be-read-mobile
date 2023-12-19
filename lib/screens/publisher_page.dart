@@ -1,6 +1,5 @@
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:to_be_read_mobile/screens/edit_book.dart';
 import 'package:to_be_read_mobile/screens/houses_page.dart';
 import 'package:to_be_read_mobile/screens/publish_book_form.dart';
@@ -26,7 +25,7 @@ class PublisherPage extends StatelessWidget {
   const PublisherPage({Key? key}) : super(key: key);
 
   // Future<IsPublisher> checkIsPublisher() async {
-  //   var url = Uri.parse('http://127.0.0.1:8000/publisher/check/');
+  //   var url = Uri.parse('https://web-production-fd753.up.railway.apppublisher/check/');
 
   //   try {
   //     var response = await http.get(url);
@@ -47,7 +46,7 @@ class PublisherPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const BottomNav(),
+      bottomNavigationBar: const BottomNav(currentIndex: 2),
       appBar: AppBar(
         title: const Text('Publisher'),
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -81,7 +80,6 @@ class PublisherPage extends StatelessWidget {
               title: 'Publish Book',
               icon: Icons.publish,
               onTap: () {
-                // Kode untuk publish book
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const BookFormPage()),
@@ -95,7 +93,7 @@ class PublisherPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EditBookPage()),
+                  MaterialPageRoute(builder: (context) => const EditBookPage()),
                 );
               },
             ),
@@ -143,7 +141,8 @@ class CardButton extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 title,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ],

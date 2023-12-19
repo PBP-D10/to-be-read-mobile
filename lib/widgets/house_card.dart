@@ -3,10 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/models/publisher_house.dart';
 
+
 class HouseCard extends StatelessWidget {
   final PublisherHouse house;
 
-  HouseCard(this.house);
+  const HouseCard(this.house, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,23 +25,23 @@ class HouseCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.business, // Replace with your desired icon
               size: 30,
               color: Colors.blueGrey,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               house.name,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               'Est. ${house.yearEstablished}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
               ),
