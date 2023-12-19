@@ -61,7 +61,7 @@ class _EditBookFormState extends State<EditBookForm> {
 
   Future<List<Book>> fetchBook() async {
     var url =
-        Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
+        Uri.parse('https://web-production-fd753.up.railway.app/api/books/');
     var response =
         await http.get(url, headers: {"content-type": "application/json"});
     var data = jsonDecode(response.body);
@@ -264,7 +264,7 @@ class _EditBookFormState extends State<EditBookForm> {
                           _imageMController.text.isNotEmpty ||
                           _imageLController.text.isNotEmpty) {
                         final response = await request.postJson(
-                          'https://web-production-fd753.up.railway.apppublisher/edit-book-flutter/${widget.book.pk}',
+                          'https://web-production-fd753.up.railway.app/publisher/edit-book-flutter/${widget.book.pk}',
                           jsonEncode(<String, String>{
                             "ISBN": _isbnController.text,
                             "title": _titleController.text,

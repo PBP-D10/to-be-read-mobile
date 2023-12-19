@@ -15,7 +15,8 @@ class EditBookCard extends StatelessWidget {
   }) : super(key: key);
 
   Future<void> deleteBook(BuildContext context, int bookId) async {
-    var url = Uri.parse('http://127.0.0.1:8000/publisher/delete/$bookId/');
+    var url = Uri.parse(
+        'https://web-production-fd753.up.railway.app/publisher/delete/$bookId/');
     try {
       var response = await http.delete(url);
 
@@ -25,9 +26,9 @@ class EditBookCard extends StatelessWidget {
             const SnackBar(content: Text('Book deleted successfully')));
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                );
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
         // Optionally, refresh the list or navigate back
       } else {
         // ignore: use_build_context_synchronously
@@ -119,7 +120,7 @@ class EditBookPage extends StatelessWidget {
 
   Future<List<Book>> fetchBooks() async {
     var url =
-        Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
+        Uri.parse('https://web-production-fd753.up.railway.app/api/books/');
     var response = await http.get(url);
 
     var data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -159,7 +160,6 @@ class EditBookPage extends StatelessWidget {
     );
   }
 }
-
 
 // Pindahkan fungsi fetchBooks ke luar kelas EditBookPage
 Future<List<Book>> fetchBooks() async {

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/screens/edit_book.dart';
 import 'package:to_be_read_mobile/screens/houses_page.dart';
@@ -25,7 +24,7 @@ class PublisherPage extends StatelessWidget {
   const PublisherPage({Key? key}) : super(key: key);
 
   // Future<IsPublisher> checkIsPublisher() async {
-  //   var url = Uri.parse('https://web-production-fd753.up.railway.apppublisher/check/');
+  //   var url = Uri.parse('https://web-production-fd753.up.railway.app/publisher/check/');
 
   //   try {
   //     var response = await http.get(url);

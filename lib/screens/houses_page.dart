@@ -10,7 +10,7 @@ import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
 class HousesPage extends StatelessWidget {
   Future<List<PublisherHouse>> fetchPublisherHouses() async {
     var url = Uri.parse(
-        'https://web-production-fd753.up.railway.apppublisher/get-houses/');
+        'https://web-production-fd753.up.railway.app/publisher/get-houses/');
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
