@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:to_be_read_mobile/screens/mytbr_page.dart';
 import 'package:to_be_read_mobile/screens/home_page.dart';
 import 'package:to_be_read_mobile/screens/profile_page.dart';
+import 'package:to_be_read_mobile/screens/publisher_page.dart';
 
 class BottomNav extends StatelessWidget {
   const BottomNav({super.key, this.currentIndex = 0});
@@ -14,6 +15,7 @@ class BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     // final request = context.watch<CookieRequest>();
     return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
       elevation: 12,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
@@ -23,6 +25,10 @@ class BottomNav extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.bookmark),
           label: 'Bookmarks',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.library_books),
+          label: 'Publisher',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
@@ -43,9 +49,14 @@ class BottomNav extends StatelessWidget {
           }
         else if (value == 2)
           {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const PublisherPage())),
+          }
+        else if (value == 3)
+          {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const ProfilePage())),
-          }
+          },
       },
     );
   }
