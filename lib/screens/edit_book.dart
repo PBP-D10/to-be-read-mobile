@@ -89,8 +89,8 @@ class EditBookPage extends StatelessWidget {
   const EditBookPage({Key? key}) : super(key: key);
 
   Future<List<Book>> fetchBooks() async {
-    var url = Uri.parse(
-        'http://https://web-production-fd753.up.railway.app/api/books/');
+    var url =
+        Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
     var response = await http.get(url);
 
     var data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -133,8 +133,7 @@ class EditBookPage extends StatelessWidget {
 
 // Pindahkan fungsi fetchBooks ke luar kelas EditBookPage
 Future<List<Book>> fetchBooks() async {
-  var url = Uri.parse(
-      'http://https://web-production-fd753.up.railway.app/api/books/');
+  var url = Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
   var response = await http.get(url);
 
   var data = jsonDecode(utf8.decode(response.bodyBytes));

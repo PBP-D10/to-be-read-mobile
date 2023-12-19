@@ -46,8 +46,8 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void getAllBooks() async {
-    var url = Uri.parse(
-        'http://https://web-production-fd753.up.railway.app/api/books/');
+    var url =
+        Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
     var response = await http.get(url);
 
     // melakukan decode response menjadi bentuk json

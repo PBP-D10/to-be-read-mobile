@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<List<Profile>> fetchProfile() async {
     var url = Uri.parse(
-        'http://https://web-production-fd753.up.railway.app/get_profile_json_flutter');
+        'https://web-production-fd753.up.railway.appget_profile_json_flutter');
     var response =
         await http.get(url, headers: {"content-type": "application/json"});
     var jsonString = utf8.decode(response.bodyBytes);
@@ -55,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<int> fetchSavedBooks() async {
     var url = Uri.parse(
-        'http://https://web-production-fd753.up.railway.app/get_saved_books_json_flutter');
+        'https://web-production-fd753.up.railway.appget_saved_books_json_flutter');
     var response =
         await http.get(url, headers: {"content-type": "application/json"});
     var jsonString = utf8.decode(response.bodyBytes);
@@ -194,7 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ElevatedButton(
           onPressed: () async {
             final response = await request.logout(
-                'http://https://web-production-fd753.up.railway.app/auth/logout-endpoint');
+                'https://web-production-fd753.up.railway.appauth/logout-endpoint');
             String message = response["message"];
             if (response['status']) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -366,7 +366,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         _dateOfBirth != profile.fields.dateOfBirth) {
                       // Only update the modified fields
                       final response = await request.postJson(
-                        "http://https://web-production-fd753.up.railway.app/edit_profile_flutter",
+                        "https://web-production-fd753.up.railway.appedit_profile_flutter",
                         jsonEncode(<String, String>{
                           'name': _name,
                           'email': _email,

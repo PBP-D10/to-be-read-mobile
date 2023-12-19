@@ -199,7 +199,7 @@ class _BookFormPageState extends State<BookFormPage> {
                       if (_formKey.currentState!.validate()) {
                         try {
                           final response = await request.postJson(
-                            "http://https://web-production-fd753.up.railway.app/publisher/create-book-flutter/",
+                            "https://web-production-fd753.up.railway.apppublisher/create-book-flutter/",
                             jsonEncode(<String, dynamic>{
                               'ISBN': _isbn,
                               'title': _title,
