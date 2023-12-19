@@ -15,8 +15,7 @@ class BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     // final request = context.watch<CookieRequest>();
     return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      elevation: 12, 
+      elevation: 12,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home_filled),
@@ -54,8 +53,8 @@ class BottomNav extends StatelessWidget {
           }
         else if (value == 3)
           {
-            Navigator.push(context, 
-              MaterialPageRoute(builder: (context) => const ProfilePage())),
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const ProfilePage())),
           }
       },
     );
