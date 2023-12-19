@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
-import 'package:to_be_read_mobile/models/book.dart';
-import 'package:to_be_read_mobile/screens/edit_book_form.dart';
 
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:to_be_read_mobile/models/book.dart';
+import 'package:to_be_read_mobile/screens/home_page.dart';
+import 'package:to_be_read_mobile/screens/edit_book_form.dart';
 
 class EditBookCard extends StatelessWidget {
   final Book book;
@@ -12,6 +13,33 @@ class EditBookCard extends StatelessWidget {
     required this.book,
     Key? key,
   }) : super(key: key);
+
+  Future<void> deleteBook(BuildContext context, int bookId) async {
+    var url = Uri.parse('http://127.0.0.1:8000/publisher/delete/$bookId/');
+    try {
+      var response = await http.delete(url);
+
+      if (response.statusCode == 200) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Book deleted successfully')));
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                );
+        // Optionally, refresh the list or navigate back
+      } else {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to delete the book')));
+      }
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +100,8 @@ class EditBookCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () {
-                    // Kode untuk delete buku
+                  onPressed: () async {
+                    deleteBook(context, book.pk);
                   },
                   child: const Text('Delete'),
                 ),
@@ -132,9 +160,10 @@ class EditBookPage extends StatelessWidget {
   }
 }
 
+
 // Pindahkan fungsi fetchBooks ke luar kelas EditBookPage
 Future<List<Book>> fetchBooks() async {
-  var url = Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
+  var url = Uri.parse('https://web-production-fd753.up.railway.app/api/books/');
   var response = await http.get(url);
 
   var data = jsonDecode(utf8.decode(response.bodyBytes));
