@@ -4,26 +4,29 @@
 
 import 'dart:convert';
 
-List<PublisherHouse> publisherHouseFromJson(String str) => List<PublisherHouse>.from(json.decode(str).map((x) => PublisherHouse.fromJson(x)));
+List<PublisherHouse> publisherHouseFromJson(String str) =>
+    List<PublisherHouse>.from(
+        json.decode(str).map((x) => PublisherHouse.fromJson(x)));
 
-String publisherHouseToJson(List<PublisherHouse> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String publisherHouseToJson(List<PublisherHouse> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class PublisherHouse {
-    String name;
-    int yearEstablished;
+  String name;
+  int yearEstablished;
 
-    PublisherHouse({
-        required this.name,
-        required this.yearEstablished,
-    });
+  PublisherHouse({
+    required this.name,
+    required this.yearEstablished,
+  });
 
-    factory PublisherHouse.fromJson(Map<String, dynamic> json) => PublisherHouse(
+  factory PublisherHouse.fromJson(Map<String, dynamic> json) => PublisherHouse(
         name: json["name"],
         yearEstablished: json["year_established"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "name": name,
         "year_established": yearEstablished,
-    };
+      };
 }

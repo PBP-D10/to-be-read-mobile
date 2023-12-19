@@ -120,10 +120,11 @@ class _LoginPageState extends State<LoginPage> {
                           String password = _passwordController.text;
 
                           final response = await request.login(
-                              "http://127.0.0.1:8000/auth/login-endpoint", {
-                            'username': username,
-                            'password': password,
-                          });
+                              "http://https://web-production-fd753.up.railway.app/auth/login-endpoint",
+                              {
+                                'username': username,
+                                'password': password,
+                              });
                           if (request.loggedIn) {
                             String message = response['message'];
                             String uname = response['username'];

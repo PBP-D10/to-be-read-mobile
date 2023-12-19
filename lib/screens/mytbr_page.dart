@@ -18,7 +18,8 @@ class MyTBReadPage extends StatefulWidget {
 
 class _MyTBReadPageState extends State<MyTBReadPage> {
   Future<List<Book>> fetchSavedBook() async {
-    var url = Uri.parse('http://127.0.0.1:8000/get_savedBook_json/');
+    var url = Uri.parse(
+        'http://https://web-production-fd753.up.railway.app/get_savedBook_json/');
     var response = await http.get(
       url,
       headers: {"Content-Type": "application/json"},
@@ -31,7 +32,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
     for (var d in data) {
       if (d != null) {
         var theUrl = Uri.parse(
-            'http://127.0.0.1:8000/book_by_id/${SavedBook.fromJson(d).fields.book}/');
+            'http://https://web-production-fd753.up.railway.app/book_by_id/${SavedBook.fromJson(d).fields.book}/');
         var theResponse = await http.get(
           theUrl,
           headers: {"Content-Type": "application/json"},
@@ -44,7 +45,8 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
   }
 
   Future<List<Quote>> fetchLatestQuote() async {
-    var url = Uri.parse('http://127.0.0.1:8000/get-quote/');
+    var url = Uri.parse(
+        'http://https://web-production-fd753.up.railway.app/get-quote/');
     var response = await http.get(
       url,
       headers: {"Content-Type": "application/json"},
@@ -161,7 +163,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                               onPressed: () async {
                                                 final response =
                                                     await request.postJson(
-                                                        "http://127.0.0.1:8000/create-quote-flutter/",
+                                                        "http://https://web-production-fd753.up.railway.app/create-quote-flutter/",
                                                         jsonEncode(<String,
                                                             String>{
                                                           'text': quote,
@@ -246,7 +248,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                                       onPressed: () async {
                                                         final response = await request
                                                             .postJson(
-                                                                "http://127.0.0.1:8000/remove-saved-flutter/",
+                                                                "http://https://web-production-fd753.up.railway.app/remove-saved-flutter/",
                                                                 jsonEncode(<String,
                                                                     Book>{
                                                                   'book': snapshot
