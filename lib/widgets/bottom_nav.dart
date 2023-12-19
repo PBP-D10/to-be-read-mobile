@@ -16,6 +16,7 @@ class BottomNav extends StatelessWidget {
     // final request = context.watch<CookieRequest>();
     return BottomNavigationBar(
       elevation: 12,
+      type: BottomNavigationBarType.fixed,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home_filled),

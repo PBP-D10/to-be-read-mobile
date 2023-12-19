@@ -96,16 +96,16 @@ class _EditBookFormState extends State<EditBookForm> {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Books'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: SizedBox(
-          width: 500,
-          child: Card(
-            child: Padding(
+        appBar: AppBar(
+          title: const Text('Edit Books'),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Colors.white,
+        ),
+        body: Center(
+          child: SizedBox(
+            width: 500,
+            child: Card(
+              child: Padding(
                 padding: const EdgeInsets.all(36),
                 child: FutureBuilder<List<Book>>(
                   future: bookFuture,
@@ -124,12 +124,11 @@ class _EditBookFormState extends State<EditBookForm> {
                       return _buildEditBookForm(book, request);
                     }
                   },
+                ),
               ),
+            ),
           ),
-        ),
-      ),
-    )
-    );
+        ));
   }
 
   Widget _buildEditBookForm(Book? book, CookieRequest request) {
@@ -295,10 +294,7 @@ class _EditBookFormState extends State<EditBookForm> {
                           setState(() {
                             refreshBookData();
                           });
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const EditBookPage()));
+                          Navigator.pop(context);
                         } else {
                           print(
                               'Error updating book. Server response: ${response.body}');
