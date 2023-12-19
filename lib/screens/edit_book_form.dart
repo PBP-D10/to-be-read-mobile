@@ -12,7 +12,7 @@ class EditBookForm extends StatefulWidget {
   final Book book;
 
   @override
-  _EditBookFormState createState() => _EditBookFormState();
+  State<EditBookForm> createState() => _EditBookFormState();
 }
 
 class _EditBookFormState extends State<EditBookForm> {
@@ -26,9 +26,7 @@ class _EditBookFormState extends State<EditBookForm> {
   late TextEditingController _imageLController;
   final _formKey = GlobalKey<FormState>();
 
-  late String _errorMessage;
   late Future<List<Book>> bookFuture;
-  bool _editingBook = false;
 
   @override
   void initState() {
@@ -44,7 +42,6 @@ class _EditBookFormState extends State<EditBookForm> {
     _imageMController = TextEditingController(text: widget.book.fields.imageM);
     _imageLController = TextEditingController(text: widget.book.fields.imageL);
 
-    _errorMessage = '';
     bookFuture = fetchBook();
   }
 
@@ -63,7 +60,8 @@ class _EditBookFormState extends State<EditBookForm> {
   }
 
   Future<List<Book>> fetchBook() async {
-    var url = Uri.parse('http://127.0.0.1:8000/api/books/');
+    var url =
+        Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
     var response =
         await http.get(url, headers: {"content-type": "application/json"});
     var data = jsonDecode(response.body);
@@ -78,17 +76,11 @@ class _EditBookFormState extends State<EditBookForm> {
   }
 
   Future<void> refreshBookData() async {
-    try {
-      var books = await fetchBook();
-      if (books.isNotEmpty) {
-        setState(() {
-          widget.book.fields = books.first.fields;
-        });
-      } else {
-        print('Error: Empty list received from the server.');
-      }
-    } catch (e) {
-      print('Error refreshing book data: $e');
+    var books = await fetchBook();
+    if (books.isNotEmpty) {
+      setState(() {
+        widget.book.fields = books.first.fields;
+      });
     }
   }
 
@@ -115,7 +107,7 @@ class _EditBookFormState extends State<EditBookForm> {
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Text(
+                      return const Text(
                           'No books found.'); // or any other appropriate message
                     } else {
                       Book? book = snapshot.data!.firstWhere(
@@ -272,7 +264,7 @@ class _EditBookFormState extends State<EditBookForm> {
                           _imageMController.text.isNotEmpty ||
                           _imageLController.text.isNotEmpty) {
                         final response = await request.postJson(
-                          'http://127.0.0.1:8000/publisher/edit-book-flutter/${widget.book.pk}',
+                          'https://web-production-fd753.up.railway.apppublisher/edit-book-flutter/${widget.book.pk}',
                           jsonEncode(<String, String>{
                             "ISBN": _isbnController.text,
                             "title": _titleController.text,
@@ -284,26 +276,29 @@ class _EditBookFormState extends State<EditBookForm> {
                             'image_l': _imageLController.text,
                           }),
                         );
-
-                        if (response['status'] == 'success') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Book updated successfully!'),
-                            ),
-                          );
-                          setState(() {
-                            refreshBookData();
-                          });
-                          Navigator.pop(context);
-                        } else {
-                          print(
-                              'Error updating book. Server response: ${response.body}');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Error updating book. Please check logs for details.'),
-                            ),
-                          );
+                        if (context.mounted) {
+                          if (response['status'] == 'success') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Book updated successfully!'),
+                              ),
+                            );
+                            setState(() {
+                              refreshBookData();
+                            });
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const EditBookPage()));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Error updating book. Please check logs for details.'),
+                              ),
+                            );
+                          }
                         }
                       } else {
                         setState(() {

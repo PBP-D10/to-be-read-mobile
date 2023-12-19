@@ -89,15 +89,31 @@ class EditBookCard extends StatelessWidget {
 class EditBookPage extends StatelessWidget {
   const EditBookPage({Key? key}) : super(key: key);
 
+  Future<List<Book>> fetchBooks() async {
+    var url =
+        Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
+    var response = await http.get(url);
+
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    List<Book> listBook = [];
+    for (var d in data) {
+      if (d != null) {
+        listBook.add(Book.fromJson(d));
+      }
+    }
+    return listBook;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Books'),
       ),
-      body: FutureBuilder<List<Book>>(
-        future: fetchBooks(), // Panggil fungsi fetchBooks
-        builder: (context, snapshot) {
+      body: FutureBuilder(
+        future: fetchBooks(),
+        builder: (context, AsyncSnapshot<List<Book>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -118,7 +134,7 @@ class EditBookPage extends StatelessWidget {
 
 // Pindahkan fungsi fetchBooks ke luar kelas EditBookPage
 Future<List<Book>> fetchBooks() async {
-  var url = Uri.parse('http://127.0.0.1:8000/api/books/');
+  var url = Uri.parse('https://web-production-fd753.up.railway.appapi/books/');
   var response = await http.get(url);
 
   var data = jsonDecode(utf8.decode(response.bodyBytes));
