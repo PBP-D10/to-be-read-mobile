@@ -74,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final request = context.watch<CookieRequest>();
     return Scaffold(
       bottomNavigationBar: const BottomNav(
-        currentIndex: 2,
+        currentIndex: 3,
       ),
       appBar: AppBar(
         title: const Text('Profile'),
