@@ -41,15 +41,15 @@ class _BottomNavState extends State<BottomNav> {
         icon: Icon(Icons.bookmark),
         label: 'Bookmarks',
       ),
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.person),
+        label: 'Profile',
+      ),
       if (isPublisher) // Conditional item
         const BottomNavigationBarItem(
           icon: Icon(Icons.library_books),
           label: 'Publisher',
         ),
-      const BottomNavigationBarItem(
-        icon: Icon(Icons.person),
-        label: 'Profile',
-      ),
     ];
 
     return BottomNavigationBar(
@@ -68,20 +68,20 @@ class _BottomNavState extends State<BottomNav> {
     } else if (value == 1) {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => const MyTBReadPage()));
-    } else if (value == 2 && isPublisher) {
+    } else if (value == 3 && isPublisher) {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => const PublisherPage()));
-    } else if (value == 3) {
+    } else if (value == 2) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const ProfilePage()));
     }
   }
 }
 
-
 class UserService {
   Future<bool> checkIsPublisher() async {
-    var url = Uri.parse('https://web-production-fd753.up.railway.app/publisher/check/');
+    var url = Uri.parse(
+        'https://web-production-fd753.up.railway.app/publisher/check/');
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
