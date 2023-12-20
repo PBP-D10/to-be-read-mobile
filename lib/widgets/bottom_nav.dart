@@ -1,7 +1,7 @@
-// add publisher check
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:to_be_read_mobile/screens/home_page.dart';
 import 'package:to_be_read_mobile/screens/mytbr_page.dart';
 import 'package:to_be_read_mobile/screens/profile_page.dart';
@@ -22,11 +22,18 @@ class _BottomNavState extends State<BottomNav> {
   @override
   void initState() {
     super.initState();
-    _checkPublisherStatus();
+    // Initialization logic can be added here if necessary
   }
 
-  void _checkPublisherStatus() async {
-    isPublisher = await UserService().checkIsPublisher();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final request = Provider.of<CookieRequest>(context, listen: false);
+    _checkPublisherStatus(request);
+  }
+
+  void _checkPublisherStatus(CookieRequest request) async {
+    isPublisher = await UserService().checkIsPublisher(request);
     setState(() {}); // Update the state to reflect changes
   }
 
@@ -41,7 +48,7 @@ class _BottomNavState extends State<BottomNav> {
         icon: Icon(Icons.bookmark),
         label: 'Bookmarks',
       ),
-      if (isPublisher) // Conditional item
+      if (isPublisher)
         const BottomNavigationBarItem(
           icon: Icon(Icons.library_books),
           label: 'Publisher',
@@ -62,28 +69,29 @@ class _BottomNavState extends State<BottomNav> {
   }
 
   void _onItemTapped(int value, BuildContext context) {
-    if (value == 0) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const HomePage()));
-    } else if (value == 1) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => const MyTBReadPage()));
-    } else if (value == 2 && isPublisher) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => const PublisherPage()));
-    } else if (value == 3) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const ProfilePage()));
+    switch (value) {
+      case 0:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+        break;
+      case 1:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const MyTBReadPage()));
+        break;
+      case 2:
+        if (isPublisher) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const PublisherPage()));
+        }
+        break;
+      case 3:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+        break;
     }
   }
 }
 
-
 class UserService {
-  Future<bool> checkIsPublisher() async {
-    var url = Uri.parse('https://web-production-fd753.up.railway.app/publisher/check/');
+  Future<bool> checkIsPublisher(CookieRequest request) async {
+    var response = await request.get('https://web-production-fd753.up.railway.app/publisher/check/');
     try {
-      var response = await http.get(url);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         return data['is_publisher'];
