@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:to_be_read_mobile/models/profile.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:to_be_read_mobile/screens/auth/login_page.dart';
 import 'package:to_be_read_mobile/widgets/bottom_nav.dart';
@@ -20,6 +19,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _editingProfile = false;
+  bool _firstTime = true;
   String _name = "";
   String _email = "";
   String? _address = "";
@@ -33,39 +33,36 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    profileFuture = fetchProfile();
   }
 
-  Future<List<Profile>> fetchProfile() async {
-    var url = Uri.parse(
-        'https://web-production-fd753.up.railway.app/get_profile_json_flutter');
+  Future<List<Profile>> fetchProfile(request) async {
     var response =
-        await http.get(url, headers: {"content-type": "application/json"});
-    var jsonString = utf8.decode(response.bodyBytes);
-    var data = jsonDecode(jsonString);
+        await request.get(
+          'https://web-production-fd753.up.railway.app/get_profile_json_flutter'
+        );
 
     List<Profile> profiles = [];
 
-    for (var profileData in data) {
-      profiles.add(Profile.fromJson(profileData));
+    for (var profileData in response) {
+      if(profileData != null){
+        profiles.add(Profile.fromJson(profileData));
+      } 
     }
 
     return profiles;
   }
 
-  Future<int> fetchSavedBooks() async {
-    var url = Uri.parse(
-        'https://web-production-fd753.up.railway.app/get_saved_books_json_flutter');
+  Future<int> fetchSavedBooks(request) async {
     var response =
-        await http.get(url, headers: {"content-type": "application/json"});
-    var jsonString = utf8.decode(response.bodyBytes);
-    var data = jsonDecode(jsonString);
+        await request.get(
+          'https://web-production-fd753.up.railway.app/get_saved_books_json_flutter'
+        );
 
-    return data.length;
+    return response.length;
   }
 
-  Future<void> refreshProfileData() async {
-    List<Profile> updatedProfile = await fetchProfile();
+  Future<void> refreshProfileData(request) async {
+    List<Profile> updatedProfile = await fetchProfile(request);
     setState(() {
       profile = updatedProfile.first;
     });
@@ -74,6 +71,12 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+
+    if (_firstTime) {
+      profileFuture = fetchProfile(request);
+      _firstTime = false;
+    }
+
     return Scaffold(
       bottomNavigationBar: const BottomNav(
         currentIndex: 3,
@@ -107,7 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       )
                     : FutureBuilder(
                         future:
-                            Future.wait([fetchProfile(), fetchSavedBooks()]),
+                            Future.wait([fetchProfile(request), fetchSavedBooks(request)]),
                         builder:
                             (context, AsyncSnapshot<List<dynamic>> snapshot) {
                           if (snapshot.connectionState ==
@@ -383,7 +386,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ));
                         setState(() {
                           _editingProfile = false;
-                          refreshProfileData();
+                          refreshProfileData(request);
                         });
                       } else {
                         ScaffoldMessenger.of(context)
