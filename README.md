@@ -25,7 +25,7 @@ Pembagian tugas modul
 - publisher house oleh Sekar Gandes Dianti
 - reader oleh Tiffany Lindy Adisuryo
 - profile oleh Samuel Farrel Bagasputra
-- book oleh Maurice Yang
+- home page, login & register page, dan book detail page oleh Maurice Yang
 - search bar & like book oleh Fredo Melvern Tanzil
 
 Role:
@@ -43,3 +43,4 @@ Alur pengintegrasian dengan web service untuk terhubung dengan aplikasi web yang
 4. Mengubah objek yang diperoleh dari web service ke model yang telah dibuat
 5. Menampilkan data yang telah diubah ke aplikasi flutter dengan FutureBuilder
 
+[![Build status](https://build.appcenter.ms/v0.1/apps/6b9f1205-6dbc-4df7-841d-875d2e6b038d/branches/main/badge)](https://appcenter.ms)
