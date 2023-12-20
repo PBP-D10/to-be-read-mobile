@@ -36,27 +36,23 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<List<Profile>> fetchProfile(request) async {
-    var response =
-        await request.get(
-          'https://web-production-fd753.up.railway.app/get_profile_json_flutter'
-        );
+    var response = await request.get(
+        'https://web-production-fd753.up.railway.app/get_profile_json_flutter');
 
     List<Profile> profiles = [];
 
     for (var profileData in response) {
-      if(profileData != null){
+      if (profileData != null) {
         profiles.add(Profile.fromJson(profileData));
-      } 
+      }
     }
 
     return profiles;
   }
 
   Future<int> fetchSavedBooks(request) async {
-    var response =
-        await request.get(
-          'https://web-production-fd753.up.railway.app/get_saved_books_json_flutter'
-        );
+    var response = await request.get(
+        'https://web-production-fd753.up.railway.app/get_saved_books_json_flutter');
 
     return response.length;
   }
@@ -79,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       bottomNavigationBar: const BottomNav(
-        currentIndex: 3,
+        currentIndex: 2,
       ),
       appBar: AppBar(
         title: const Text('Profile'),
@@ -109,8 +105,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         },
                       )
                     : FutureBuilder(
-                        future:
-                            Future.wait([fetchProfile(request), fetchSavedBooks(request)]),
+                        future: Future.wait(
+                            [fetchProfile(request), fetchSavedBooks(request)]),
                         builder:
                             (context, AsyncSnapshot<List<dynamic>> snapshot) {
                           if (snapshot.connectionState ==
