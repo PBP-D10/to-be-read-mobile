@@ -44,4 +44,6 @@ Alur pengintegrasian dengan web service untuk terhubung dengan aplikasi web yang
 5. Menampilkan data yang telah diubah ke aplikasi flutter dengan FutureBuilder
 
 [![Build status](https://build.appcenter.ms/v0.1/apps/6b9f1205-6dbc-4df7-841d-875d2e6b038d/branches/main/badge)](https://appcenter.ms)
+
+
 Link apk: https://install.appcenter.ms/orgs/pbp-d10/apps/tbread/distribution_groups/public
