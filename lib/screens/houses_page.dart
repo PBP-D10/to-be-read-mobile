@@ -54,6 +54,7 @@ class HousesPage extends StatelessWidget {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
+                    print(snapshot.error);
                     return Text('Error loading publisher houses');
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Text('No publisher houses available');

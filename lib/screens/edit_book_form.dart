@@ -76,11 +76,20 @@ class _EditBookFormState extends State<EditBookForm> {
   }
 
   Future<void> refreshBookData() async {
-    var books = await fetchBook();
-    if (books.isNotEmpty) {
-      setState(() {
-        widget.book.fields = books.first.fields;
-      });
+    try {
+      if (mounted) {
+        var books = await fetchBook();
+        if (mounted && books.isNotEmpty) {
+          setState(() {
+            widget.book.fields = books.first.fields;
+          });
+        }
+      }
+    } catch (error) {
+      // Handle any unexpected errors here
+      if (mounted) {
+        print('Error during refreshBookData(): $error');
+      }
     }
   }
 
@@ -88,39 +97,40 @@ class _EditBookFormState extends State<EditBookForm> {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Edit Books'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Colors.white,
-        ),
-        body: Center(
-          child: SizedBox(
-            width: 500,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(36),
-                child: FutureBuilder<List<Book>>(
-                  future: bookFuture,
-                  builder: (context, AsyncSnapshot<List<Book>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text(
-                          'No books found.'); // or any other appropriate message
-                    } else {
-                      Book? book = snapshot.data!.firstWhere(
-                          (b) => b.pk == widget.book.pk,
-                          orElse: () => widget.book);
-                      return _buildEditBookForm(book, request);
-                    }
-                  },
-                ),
+      appBar: AppBar(
+        title: const Text('Edit Books'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: SizedBox(
+          width: 500,
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(36),
+              child: FutureBuilder<List<Book>>(
+                future: bookFuture,
+                builder: (context, AsyncSnapshot<List<Book>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text('No books found.');
+                  } else {
+                    Book? book = snapshot.data!.firstWhere(
+                      (b) => b.pk == widget.book.pk,
+                      orElse: () => widget.book,
+                    );
+                    return _buildEditBookForm(book, request);
+                  }
+                },
               ),
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _buildEditBookForm(Book? book, CookieRequest request) {
@@ -132,11 +142,6 @@ class _EditBookFormState extends State<EditBookForm> {
           children: <Widget>[
             TextFormField(
               controller: _isbnController,
-              // onChanged: (value) {
-              //   setState(() {
-              //     _isbnController.text = value;
-              //   });
-              // },
               decoration: const InputDecoration(
                 labelText: 'ISBN',
                 contentPadding: EdgeInsets.only(bottom: 8.0),
@@ -145,11 +150,6 @@ class _EditBookFormState extends State<EditBookForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _titleController,
-              // onChanged: (value) {
-              //   setState(() {
-              //     _titleController.text = value;
-              //   });
-              // },
               decoration: const InputDecoration(
                 labelText: 'Title',
                 contentPadding: EdgeInsets.only(bottom: 8.0),
@@ -158,11 +158,6 @@ class _EditBookFormState extends State<EditBookForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _authorController,
-              // onChanged: (value) {
-              //   setState(() {
-              //     _authorController.text = value;
-              //   });
-              // },
               decoration: const InputDecoration(
                 labelText: 'Author',
                 contentPadding: EdgeInsets.only(bottom: 8.0),
@@ -171,11 +166,6 @@ class _EditBookFormState extends State<EditBookForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _yearController,
-              // onChanged: (value) {
-              //   setState(() {
-              //     _yearController.text = value;
-              //   });
-              // },
               decoration: const InputDecoration(
                 labelText: 'Year',
                 contentPadding: EdgeInsets.only(bottom: 8.0),
@@ -184,11 +174,6 @@ class _EditBookFormState extends State<EditBookForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _publisherController,
-              // onChanged: (value) {
-              //   setState(() {
-              //     _publisherController.text = value;
-              //   });
-              // },
               decoration: const InputDecoration(
                 labelText: 'Publisher',
                 contentPadding: EdgeInsets.only(bottom: 8.0),
@@ -197,11 +182,6 @@ class _EditBookFormState extends State<EditBookForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _imageSController,
-              // onChanged: (value) {
-              //   setState(() {
-              //     _imageSController.text = value;
-              //   });
-              // },
               decoration: const InputDecoration(
                 labelText: 'Image Small',
                 contentPadding: EdgeInsets.only(bottom: 8.0),
@@ -210,11 +190,6 @@ class _EditBookFormState extends State<EditBookForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _imageMController,
-              // onChanged: (value) {
-              //   setState(() {
-              //     _imageMController.text = value;
-              //   });
-              // },
               decoration: const InputDecoration(
                 labelText: 'Image Medium',
                 contentPadding: EdgeInsets.only(bottom: 8.0),
@@ -223,11 +198,6 @@ class _EditBookFormState extends State<EditBookForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _imageLController,
-              // onChanged: (value) {
-              //   setState(() {
-              //     _imageLController.text = value;
-              //   });
-              // },
               decoration: const InputDecoration(
                 labelText: 'Image Large',
                 contentPadding: EdgeInsets.only(bottom: 8.0),
@@ -239,71 +209,58 @@ class _EditBookFormState extends State<EditBookForm> {
               children: [
                 ElevatedButton(
                   onPressed: () async {
-                    Navigator.pop(context);
+                    if (mounted) {
+                      Navigator.pop(context);
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 16),
                     backgroundColor: Colors.red,
                   ),
-                  child: const Text('Cancel',
-                      style: TextStyle(
-                        color: Colors.white,
-                      )),
+                  child: const Text('Cancel', style: TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      if (_isbnController.text.isNotEmpty ||
-                          _titleController.text.isNotEmpty ||
-                          _authorController.text.isNotEmpty ||
-                          _yearController.text.isNotEmpty ||
-                          _publisherController.text.isNotEmpty ||
-                          _imageSController.text.isNotEmpty ||
-                          _imageMController.text.isNotEmpty ||
-                          _imageLController.text.isNotEmpty) {
-                        final response = await request.postJson(
-                          'https://web-production-fd753.up.railway.app/publisher/edit-book-flutter/${widget.book.pk}',
-                          jsonEncode(<String, String>{
-                            "ISBN": _isbnController.text,
-                            "title": _titleController.text,
-                            "author": _authorController.text,
-                            "year": _yearController.text,
-                            'publisher': _publisherController.text,
-                            'image_s': _imageSController.text,
-                            'image_m': _imageMController.text,
-                            'image_l': _imageLController.text,
-                          }),
-                        );
-                        if (context.mounted) {
-                          if (response['status'] == 'success') {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Book updated successfully!'),
-                              ),
-                            );
-                            setState(() {
-                              refreshBookData();
-                            });
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const EditBookPage()));
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    'Error updating book. Please check logs for details.'),
-                              ),
-                            );
-                          }
+                    if (mounted && _formKey.currentState!.validate()) {
+                      final response = await request.postJson(
+                        'https://web-production-fd753.up.railway.app/publisher/edit-book-flutter/${widget.book.pk}',
+                        jsonEncode(<String, String>{
+                          "ISBN": _isbnController.text,
+                          "title": _titleController.text,
+                          "author": _authorController.text,
+                          "year": _yearController.text,
+                          'publisher': _publisherController.text,
+                          'image_s': _imageSController.text,
+                          'image_m': _imageMController.text,
+                          'image_l': _imageLController.text,
+                        }),
+                      );
+                      if (mounted) {
+                        if (response['status'] == 'success') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Book updated successfully!'),
+                            ),
+                          );
+
+                          setState(() {
+                            refreshBookData();
+                          });
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EditBookPage(),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Error updating book. Please check logs for details.'),
+                            ),
+                          );
                         }
-                      } else {
-                        setState(() {
-                          Navigator.pop(context);
-                        });
                       }
                     }
                   },
@@ -312,12 +269,7 @@ class _EditBookFormState extends State<EditBookForm> {
                         horizontal: 24, vertical: 16),
                     backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
