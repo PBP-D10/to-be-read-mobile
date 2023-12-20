@@ -17,19 +17,13 @@ class MyTBReadPage extends StatefulWidget {
 }
 
 class _MyTBReadPageState extends State<MyTBReadPage> {
-  Future<List<Book>> fetchSavedBook() async {
-    var url = Uri.parse(
-        'https://web-production-fd753.up.railway.app/get_savedBook_json/');
-    var response = await http.get(
-      url,
-      headers: {"Content-Type": "application/json"},
+  Future<List<Book>> fetchSavedBook(request) async {
+    var response = await request.get(
+      'https://web-production-fd753.up.railway.app/get_savedBook_json/'
     );
 
-    // melakukan decode response menjadi bentuk json
-    var data = jsonDecode(utf8.decode(response.bodyBytes));
-
     List<Book> savedBook = [];
-    for (var d in data) {
+    for (var d in response) {
       if (d != null) {
         var theUrl = Uri.parse(
             'https://web-production-fd753.up.railway.app/book_by_id/${SavedBook.fromJson(d).fields.book}/');
@@ -210,7 +204,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                         const SizedBox(height: 18.0),
                         Expanded(
                           child: FutureBuilder(
-                              future: fetchSavedBook(),
+                              future: fetchSavedBook(request),
                               builder: (context, AsyncSnapshot snapshot) {
                                 if (snapshot.data == null) {
                                   return const Center(
@@ -259,7 +253,7 @@ class _MyTBReadPageState extends State<MyTBReadPage> {
                                                                 'status'] ==
                                                             'success') {
                                                           setState(() {
-                                                            fetchSavedBook();
+                                                            fetchSavedBook(request);
                                                           });
                                                         }
                                                       },
