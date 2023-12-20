@@ -81,7 +81,7 @@ class _BottomNavState extends State<BottomNav> {
 
 class UserService {
   Future<bool> checkIsPublisher() async {
-    var url = Uri.parse('http://127.0.0.1:8000/publisher/check/');
+    var url = Uri.parse('https://web-production-fd753.up.railway.app/publisher/check/');
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
