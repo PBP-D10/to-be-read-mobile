@@ -18,7 +18,7 @@ Modul yang akan diimplementasikan:
 - Publisher        : Model tambahan untuk _extend_ user, mempunyai privilege untuk merilis buku
 - PublisherHouse  : Model untuk mengatur publisher berdasarkan dari penerbit mana, seperti grup untuk publisher
 - Search bar      : Modul untuk mencari buku berdasarkan kata kunci
-- Like Book       : Modul untuk memberi opsi kepada pembaca untuk _like_ buku yang mereka sukai
+- Like Book       : Modul untuk memberi opsi kepada pembaca untuk _like_ buku yang mereka sukai dan menampilkan like count pada detail buku
 
 Pembagian tugas modul
 - publisher oleh Joseph Bintang A
@@ -44,3 +44,4 @@ Alur pengintegrasian dengan web service untuk terhubung dengan aplikasi web yang
 5. Menampilkan data yang telah diubah ke aplikasi flutter dengan FutureBuilder
 
 [![Build status](https://build.appcenter.ms/v0.1/apps/6b9f1205-6dbc-4df7-841d-875d2e6b038d/branches/main/badge)](https://appcenter.ms)
+Link apk: https://install.appcenter.ms/orgs/pbp-d10/apps/tbread/distribution_groups/public
